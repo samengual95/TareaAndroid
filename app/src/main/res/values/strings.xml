@@ -5,5 +5,5 @@
     <string name="boton_facebook">boton_facebook</string>
     <string name="error_inicio_facebook">Ha ocurrido un error</string>
     <string name="cancel_inicio_facebook">Se ha cancelado la operación</string>
-
+    <string name="cerrar_cesion">Cerrar Sesion</string>
 </resources>

@@ -48,7 +48,7 @@ public class LoginActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            progressDialog = new ProgressDialog(getApplicationContext());
+            progressDialog = new ProgressDialog(LoginActivity.this);
             progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             progressDialog.setMessage("Procesando...");
             progressDialog.setCancelable(true);
@@ -68,7 +68,7 @@ public class LoginActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            Intent intent = new Intent(getApplicationContext(),HomeActivity.class);
+            Intent intent = new Intent(LoginActivity.this,HomeActivity.class);
             startActivity(intent);
             progressDialog.dismiss();
         }
