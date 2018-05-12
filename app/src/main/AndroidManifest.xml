@@ -23,8 +23,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".Vistas.Activities.LoginActivity" />
-
-        <activity android:name=".Vistas.Activities.HomeActivity"></activity>
+        <activity android:name=".Vistas.Activities.HomeActivity" />
+        <activity android:name=".Vistas.Activities.PrincipalActivity"></activity>
     </application>
 
 </manifest>
