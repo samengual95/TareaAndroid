@@ -20,4 +20,17 @@
         android:textColor="@color/colorBlanco"
         android:text="Cerrar Sesion"/>
 
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/button1"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="56dp"
+        android:backgroundTint="@color/colorPrimaryDark"
+        android:shadowColor="@color/color_fondo"
+        android:text="Reservar"
+        android:textAllCaps="false"
+        android:textColor="@color/colorBlanco" />
+
 </RelativeLayout>

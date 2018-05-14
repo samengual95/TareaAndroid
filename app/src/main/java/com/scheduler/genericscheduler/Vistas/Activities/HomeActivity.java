@@ -15,7 +15,7 @@ import com.scheduler.genericscheduler.R;
 
 public class HomeActivity extends AppCompatActivity {
 
-    private Button boton;
+    private Button boton,boton1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -23,6 +23,13 @@ public class HomeActivity extends AppCompatActivity {
         if(AccessToken.getCurrentAccessToken() == null) {
             new TareaMoverseLogin().execute();
         }
+        boton1 = findViewById(R.id.button2);
+        boton1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new TareaMoversePrincipal().execute();
+            }
+        });
         boton = findViewById(R.id.button1);
         boton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -33,6 +40,35 @@ public class HomeActivity extends AppCompatActivity {
         });
     }
     private ProgressDialog progressDialog;
+    public class TareaMoversePrincipal extends AsyncTask<Void,Void,Void>{
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(HomeActivity.this);
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDialog.setMessage("Procesando...");
+            progressDialog.setCancelable(true);
+            progressDialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            Intent intent = new Intent(HomeActivity.this,PrincipalActivity.class);
+            startActivity(intent);
+            progressDialog.dismiss();
+        }
+    }
 
     public class TareaMoverseLogin extends AsyncTask<Void,Void,Void> {
 

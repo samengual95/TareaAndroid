@@ -1,5 +1,6 @@
 package com.scheduler.genericscheduler.Vistas.Fragments;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -8,9 +9,19 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 
+import com.scheduler.genericscheduler.Controladores.EmpleadoAdaptador;
+import com.scheduler.genericscheduler.Controladores.InterfaceServicios;
+import com.scheduler.genericscheduler.Modelos.Empleado;
+import com.scheduler.genericscheduler.Modelos.EmpleadoRespuesta;
 import com.scheduler.genericscheduler.R;
 
+import java.util.ArrayList;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -24,6 +35,11 @@ public class EmpleadosFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    ProgressDialog progressDialog;
+    private static final String TAG = "Prueba";
+
+    private EmpleadoAdaptador empleadoAdaptador;
+    private ListView listViewEmpleado;
 
     private OnFragmentInteractionListener mListener;
 
@@ -62,15 +78,33 @@ public class EmpleadosFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_empleados, container, false);
-        retrofit = new Retrofit.Builder()
-                .baseUrl("http://18.219.46.139/grupo2/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        obtenerDatos();
+        listViewEmpleado = view.findViewById(R.id.listView_empleados);
+        empleadoAdaptador = new EmpleadoAdaptador(getActivity());
+        new TareaCargarDatosEmpleados().execute();
         return view;
     }
 
-    private void obtenerDatos() {
+    private Empleado obtenerDatos() {
+        InterfaceServicios service = retrofit.create(InterfaceServicios.class);
+        Call<EmpleadoRespuesta> empleadoRespuestaCall = service.ObtenerListaEmpleados();
+        empleadoRespuestaCall.enqueue(new Callback<EmpleadoRespuesta>() {
+            @Override
+            public void onResponse(Call<EmpleadoRespuesta> call, Response<EmpleadoRespuesta> response) {
+                if(response.isSuccessful()){
+                    EmpleadoRespuesta empleadoRespuesta = response.body();
+                    ArrayList<Empleado> resp = empleadoRespuesta.getEmpleados();
+                    empleadoAdaptador.AdicionarListaEmpleados(resp);
+                }
+                else{
+                }
+            }
+
+            @Override
+            public void onFailure(Call<EmpleadoRespuesta> call, Throwable t) {
+
+            }
+        });
+        return null;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -91,16 +125,6 @@ public class EmpleadosFragment extends Fragment {
         mListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
@@ -110,16 +134,29 @@ public class EmpleadosFragment extends Fragment {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            progressDialog = new ProgressDialog(getActivity());
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDialog.setMessage("Procesando...");
+            progressDialog.setCancelable(true);
+            progressDialog.show();
         }
 
         @Override
         protected Void doInBackground(Void... voids) {
+            retrofit = new Retrofit.Builder()
+                    .baseUrl("http://18.219.46.139/grupo2/")
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+            obtenerDatos();
             return null;
         }
 
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
+            listViewEmpleado.setAdapter(empleadoAdaptador);
+            progressDialog.dismiss();
         }
     }
+
 }
