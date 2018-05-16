@@ -3,6 +3,8 @@ package com.scheduler.genericscheduler.Controladores;
 import com.scheduler.genericscheduler.Modelos.Empleado;
 import com.scheduler.genericscheduler.Modelos.EmpleadoRespuesta;
 
+import java.util.ArrayList;
+
 import retrofit2.Call;
 import retrofit2.http.GET;
 
@@ -13,5 +15,5 @@ import retrofit2.http.GET;
 public interface InterfaceServicios {
 
     @GET("api/empleado/listar/1/token")
-    Call<EmpleadoRespuesta> ObtenerListaEmpleados();
+    Call<ArrayList<Empleado>> ObtenerListaEmpleados();
 }

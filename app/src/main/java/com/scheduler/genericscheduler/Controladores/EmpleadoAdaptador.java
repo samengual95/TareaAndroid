@@ -41,10 +41,11 @@ public class EmpleadoAdaptador extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         Empleado empleado = (Empleado) getItem(position);
-        convertView = LayoutInflater.from(context).inflate(R.layout.item_empleado,null);
-        ImageView ivEmpleado = convertView.findViewById(R.id.image_view_empleado);
-        TextView tvNombre = convertView.findViewById(R.id.text_view_nombre_empleado);
+        convertView = LayoutInflater.from(context).inflate(R.layout.empleado_item,null);
+        TextView tvNombre = convertView.findViewById(R.id.textView9);
         tvNombre.setText(empleado.getNombre());
+        TextView tvApellido = convertView.findViewById(R.id.textView10);
+        tvApellido.setText(empleado.getApellido());
         return convertView;
     }
 

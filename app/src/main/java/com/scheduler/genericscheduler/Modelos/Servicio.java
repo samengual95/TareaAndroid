@@ -1,8 +1,5 @@
 package com.scheduler.genericscheduler.Modelos;
 
-/**
- * Created by Clara on 12/05/2018.
- */
 
 public class Servicio {
     private int id;

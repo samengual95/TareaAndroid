@@ -1,12 +1,11 @@
 package com.scheduler.genericscheduler.Modelos;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-/**
- * Created by Clara on 12/05/2018.
- */
 
-public class Empleado {
+
+public class Empleado implements Serializable{
     private int id;
     private String nombre;
     private String apellido;

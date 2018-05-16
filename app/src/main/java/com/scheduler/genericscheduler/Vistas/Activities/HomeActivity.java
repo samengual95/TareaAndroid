@@ -40,6 +40,7 @@ public class HomeActivity extends AppCompatActivity {
         });
     }
     private ProgressDialog progressDialog;
+
     public class TareaMoversePrincipal extends AsyncTask<Void,Void,Void>{
         @Override
         protected void onPreExecute() {

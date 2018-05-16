@@ -6,7 +6,8 @@
     <string name="error_inicio_facebook">Ha ocurrido un error</string>
     <string name="cancel_inicio_facebook">Se ha cancelado la operación</string>
     <string name="cerrar_cesion">Cerrar Sesion</string>
-
+    <string name="texto_nombre">Nombre</string>
+    <string name="texto_apellido">Apellido</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
