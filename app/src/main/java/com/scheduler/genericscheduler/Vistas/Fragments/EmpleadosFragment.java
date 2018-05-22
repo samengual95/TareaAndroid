@@ -154,7 +154,7 @@ public class EmpleadosFragment extends Fragment {
         @Override
         protected Void doInBackground(Void... voids) {
             retrofit = new Retrofit.Builder()
-                    .baseUrl("http://18.219.46.139/grupo2/")
+                    .baseUrl("http://18.219.46.139/grupo1/")
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
             obtenerDatos();

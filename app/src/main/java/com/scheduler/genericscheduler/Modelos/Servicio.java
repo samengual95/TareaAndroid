@@ -1,7 +1,9 @@
 package com.scheduler.genericscheduler.Modelos;
 
 
-public class Servicio {
+import java.io.Serializable;
+
+public class Servicio implements Serializable {
     private int id;
     private String nombre;
     private int duracionEnMinutos;

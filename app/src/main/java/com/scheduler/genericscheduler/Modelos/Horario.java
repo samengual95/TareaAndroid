@@ -1,35 +1,28 @@
 package com.scheduler.genericscheduler.Modelos;
 
+import java.io.Serializable;
+
 /**
  * Created by Clara on 12/05/2018.
  */
 
-public class Horario {
-    private String dia;
-    private String entrada;
-    private String salida;
+public class Horario implements Serializable {
+    private String hora;
+    private Reserva horaReservada;
 
-    public String getDia() {
-        return dia;
+    public String getHora() {
+        return hora;
     }
 
-    public void setDia(String dia) {
-        this.dia = dia;
+    public void setHora(String hora) {
+        this.hora = hora;
     }
 
-    public String getEntrada() {
-        return entrada;
+    public Reserva getHoraReservada() {
+        return horaReservada;
     }
 
-    public void setEntrada(String entrada) {
-        this.entrada = entrada;
-    }
-
-    public String getSalida() {
-        return salida;
-    }
-
-    public void setSalida(String salida) {
-        this.salida = salida;
+    public void setHoraReservada(Reserva horaReservada) {
+        this.horaReservada = horaReservada;
     }
 }

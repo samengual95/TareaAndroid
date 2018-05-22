@@ -20,9 +20,11 @@ public class HomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
         if(AccessToken.getCurrentAccessToken() == null) {
             new TareaMoverseLogin().execute();
         }
+
         boton1 = findViewById(R.id.button2);
         boton1.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -2,18 +2,33 @@ package com.scheduler.genericscheduler.Vistas.Fragments;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.TextView;
 
+import com.scheduler.genericscheduler.Controladores.InterfaceServicios;
 import com.scheduler.genericscheduler.Controladores.ServiciosAdaptador;
 import com.scheduler.genericscheduler.Modelos.Empleado;
+import com.scheduler.genericscheduler.Modelos.Servicio;
 import com.scheduler.genericscheduler.R;
+
+import java.util.ArrayList;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -36,6 +51,10 @@ public class EmpleadoServiciosFragment extends Fragment {
     private ProgressDialog progressDialog;
     private ServiciosAdaptador serviciosAdaptador;
     private ListView listViewServicios;
+    private EmpleadoHorariosFragment empleadoHorariosFragment;
+    private Retrofit retrofit;
+
+    private static final String TAG = "Probando";
 
     private OnFragmentInteractionListener mListener;
 
@@ -76,9 +95,15 @@ public class EmpleadoServiciosFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_empleado_servicios, container, false);
         listViewServicios = view.findViewById(R.id.list_view_servicios);
         serviciosAdaptador = new ServiciosAdaptador(getActivity());
-        Empleado d = (Empleado) getActivity().getIntent().getExtras().getSerializable("empleado_seleccionado");
-        serviciosAdaptador.AdicionarListaServicios(d.getServicios());
-        listViewServicios.setAdapter(serviciosAdaptador);
+        new TareaCargarDatosServicios().execute();
+        listViewServicios.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Servicio s = (Servicio) serviciosAdaptador.getItem(i);
+                getActivity().getIntent().putExtra("servicio_seleccionado",s);
+                new TareaCambiarFragmentHorarios().execute();
+            }
+        });
         return view;
     }
 
@@ -113,5 +138,69 @@ public class EmpleadoServiciosFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    private void obtenerDatosServicio() {
+        Empleado d = (Empleado) getActivity().getIntent().getExtras().getSerializable("empleado_seleccionado");
+        serviciosAdaptador.AdicionarListaServicios(d.getServicios());
+    }
+
+
+    public class TareaCargarDatosServicios extends AsyncTask<Void,Void,Void>{
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(getActivity());
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDialog.setMessage("Procesando...");
+            progressDialog.setCancelable(true);
+            progressDialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            obtenerDatosServicio();
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            listViewServicios.setAdapter(serviciosAdaptador);
+            progressDialog.dismiss();
+        }
+    }
+
+    public class TareaCambiarFragmentHorarios extends AsyncTask<Void,Void,Void> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(getActivity());
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDialog.setMessage("Procesando...");
+            progressDialog.setCancelable(true);
+            progressDialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            empleadoHorariosFragment = new EmpleadoHorariosFragment();
+            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.frame_contenedor,empleadoHorariosFragment);
+            fragmentTransaction.addToBackStack(null);
+            fragmentTransaction.commit();
+            progressDialog.dismiss();
+        }
     }
 }
