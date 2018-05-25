@@ -1,15 +1,10 @@
 package com.scheduler.genericscheduler.Modelos;
 
-public class Reserva {
+import java.io.Serializable;
 
-    public Reserva(){}
-
-    public Reserva(String id){
-        this.id=id;
-    }
-
-
+public class Cliente implements Serializable{
     private String id;
+
 
     public String getId() {
         return id;

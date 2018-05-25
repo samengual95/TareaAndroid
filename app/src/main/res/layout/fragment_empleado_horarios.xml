@@ -30,21 +30,21 @@
                 android:id="@+id/ButtonDia"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="248dp"
+                android:layout_marginLeft="100dp"
                 android:background="@color/colorLogout"
                 android:text="Dia" />
                 <Button
                     android:id="@+id/ButtonOK"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="1dp"
+                    android:layout_marginLeft="10dp"
                     android:background="@color/colorLogout"
                     android:text="ok" />
                 <TextView
                     android:id="@+id/tvDia"
                     android:text="dia"
                     android:textColor="@color/colorLogout"
-                    android:textSize="20dp"
+                    android:textSize="30dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"/>

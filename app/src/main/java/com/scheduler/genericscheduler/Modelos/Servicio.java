@@ -4,15 +4,15 @@ package com.scheduler.genericscheduler.Modelos;
 import java.io.Serializable;
 
 public class Servicio implements Serializable {
-    private int id;
+    private String id;
     private String nombre;
-    private int duracionEnMinutos;
+    private String duracionEnMinutos;
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -24,11 +24,11 @@ public class Servicio implements Serializable {
         this.nombre = nombre;
     }
 
-    public int getDuracionEnMinutos() {
+    public String getDuracionEnMinutos() {
         return duracionEnMinutos;
     }
 
-    public void setDuracionEnMinutos(int duracionEnMinutos) {
+    public void setDuracionEnMinutos(String duracionEnMinutos) {
         this.duracionEnMinutos = duracionEnMinutos;
     }
 }

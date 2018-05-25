@@ -5,20 +5,32 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.scheduler.genericscheduler.Modelos.TokenRequest;
 import com.scheduler.genericscheduler.R;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.Arrays;
 
 public class LoginActivity extends AppCompatActivity {
 
     private LoginButton loginButton;
     private CallbackManager callbackManager;
     private ProgressDialog progressDialog;
+    private TokenRequest tokenRequest;
+
+    private static final String TAG = "Prueba3";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,9 +38,51 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         callbackManager = CallbackManager.Factory.create();
         loginButton = (LoginButton) findViewById(R.id.loginButton);
+        loginButton.setReadPermissions(Arrays.asList("email","public_profile","contact_email","user_birthday"));
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
-            public void onSuccess(LoginResult loginResult) {
+            public void onSuccess(final LoginResult loginResult) {
+                GraphRequest request = GraphRequest.newMeRequest(loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
+                    @Override
+                    public void onCompleted(JSONObject object, GraphResponse response){
+                        String nombre="";
+                        String mail="";
+                        String token="";
+                        String ape="";
+                        String fbId="";
+                        if(response != null){
+                            try{
+                                if(object.getString("email") != null){
+                                    mail = object.getString("email");
+                                }
+                                if(object.getString("first_name") != null){
+                                    nombre = object.getString("first_name");
+                                }
+                                if(object.getString("last_name") != null){
+                                    ape = object.getString("last_name");
+                                }
+                                if(object.getString("id") != null){
+                                    fbId = object.getString("id");
+                                }
+                                token = loginResult.getAccessToken().getToken();
+                                tokenRequest = new TokenRequest();
+                                tokenRequest.setToken(token);
+                                tokenRequest.setCorreo(mail);
+                                tokenRequest.setNombre(nombre);
+                                tokenRequest.setApellido(ape);
+                                tokenRequest.setFacebookid(fbId);
+                                Log.e(TAG,"token:" + tokenRequest.getToken());
+                                Log.e(TAG,"correo: " + tokenRequest.getCorreo());
+                            }catch (JSONException e){
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                });
+                Bundle parameters = new Bundle();
+                parameters.putString("fields", "email,first_name,last_name,id");
+                request.setParameters(parameters);
+                request.executeAsync();
                 new TareaCambiarAHome().execute();
             }
 
@@ -69,6 +123,7 @@ public class LoginActivity extends AppCompatActivity {
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
             Intent intent = new Intent(LoginActivity.this,HomeActivity.class);
+            intent.putExtra("datos_usuario",tokenRequest);
             startActivity(intent);
             progressDialog.dismiss();
         }

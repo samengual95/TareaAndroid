@@ -6,19 +6,28 @@ import java.util.ArrayList;
 
 
 public class Empleado implements Serializable{
-    private int id;
+    private String id;
+    private String token;
     private String nombre;
     private String apellido;
     private String correo;
     private String imagen;
-    private ArrayList<Horario> horarios;
+    private ArrayList<HorarioEmpleado> horarios;
     private ArrayList<Servicio> servicios;
 
-    public int getId() {
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -54,11 +63,11 @@ public class Empleado implements Serializable{
         this.imagen = imagen;
     }
 
-    public ArrayList<Horario> getHorarios() {
+    public ArrayList<HorarioEmpleado> getHorarios() {
         return horarios;
     }
 
-    public void setHorarios(ArrayList<Horario> horarios) {
+    public void setHorarios(ArrayList<HorarioEmpleado> horarios) {
         this.horarios = horarios;
     }
 

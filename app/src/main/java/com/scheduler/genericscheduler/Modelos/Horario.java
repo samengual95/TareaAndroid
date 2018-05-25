@@ -1,14 +1,23 @@
 package com.scheduler.genericscheduler.Modelos;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 /**
  * Created by Clara on 12/05/2018.
  */
 
-public class Horario implements Serializable {
+public class Horario {
     private String hora;
-    private Reserva horaReservada;
+    private ReservaEmpleado horaReservada;
+
+    public Horario(){}
+
+    public Horario(String h, ReservaEmpleado hR){
+        this.hora=h;
+        this.horaReservada=hR;
+    }
+
 
     public String getHora() {
         return hora;
@@ -18,11 +27,11 @@ public class Horario implements Serializable {
         this.hora = hora;
     }
 
-    public Reserva getHoraReservada() {
+    public ReservaEmpleado getHoraReservada() {
         return horaReservada;
     }
 
-    public void setHoraReservada(Reserva horaReservada) {
+    public void setHoraReservada(ReservaEmpleado horaReservada) {
         this.horaReservada = horaReservada;
     }
 }

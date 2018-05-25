@@ -43,11 +43,12 @@ public class HorarioAdaptador extends BaseAdapter {
         TextView tvHora = convertView.findViewById(R.id.textViewHorario);
         tvHora.setText(horario.getHora());
         TextView tvReserva = convertView.findViewById(R.id.textViewReserva);
-        try{
-            if(!horario.getHoraReservada().getId().isEmpty())
-                tvReserva.setText("Reservada");
-        }catch(NullPointerException e){
+        if(horario.getHoraReservada()==null){
             tvReserva.setText("Disponible");
+        }
+        else
+        {
+            tvReserva.setText("Reservada");
         }
         return convertView;
     }
