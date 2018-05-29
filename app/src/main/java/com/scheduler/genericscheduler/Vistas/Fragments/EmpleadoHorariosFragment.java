@@ -265,6 +265,7 @@ public class EmpleadoHorariosFragment extends Fragment {
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
             new TareaCambiarFragmentHome().execute();
+            progressDialog.dismiss();
         }
     }
 

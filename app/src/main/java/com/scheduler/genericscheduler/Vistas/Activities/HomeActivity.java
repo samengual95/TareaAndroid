@@ -26,7 +26,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class HomeActivity extends AppCompatActivity {
 
 
-    private Button boton,boton1;
+    private Button boton,boton1,boton2;
     private Retrofit retrofit;
     private RespuestaSesion respuestaSesion;
     private static final String TAG = "Prueba3";
@@ -34,25 +34,6 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_home);
-
-        boton1 = findViewById(R.id.button2);
-        boton1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new TareaMoversePrincipal().execute();
-            }
-        });
-        boton = findViewById(R.id.button1);
-        respuestaSesion = new RespuestaSesion();
-        boton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                cerrarSesion();
-                new TareaMoverseLogin().execute();
-            }
-        });
-
 
         if(AccessToken.getCurrentAccessToken() == null){
             new TareaMoverseLogin().execute();
@@ -60,10 +41,41 @@ public class HomeActivity extends AppCompatActivity {
         else{
             Bundle bundle = getIntent().getExtras();
             TokenRequest nuevo = (TokenRequest) bundle.getSerializable("datos_usuario");
-           // Log.e(TAG,"ahora" + nuevo.getCorreo());
-          //  Log.e(TAG,"asda1" + nuevo.getFacebooktoken());
             mandarDatos(nuevo);
+            setContentView(R.layout.activity_home);
+            boton1 = findViewById(R.id.button2);
+            boton1.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    new TareaMoversePrincipal().execute();
+                }
+            });
+            boton = findViewById(R.id.button1);
+            respuestaSesion = new RespuestaSesion();
+            boton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    cerrarSesion();
+                    new TareaMoverseLogin().execute();
+                }
+            });
+            boton2 = findViewById(R.id.button3);
+            boton2.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    new TareaMoversePrincipalCancelar().execute();
+                }
+            });
+
+
+
+
         }
+
+
+
+
+
     }
 
     public void mandarDatos(TokenRequest n){
@@ -77,10 +89,9 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<RespuestaSesion> call, Response<RespuestaSesion> response) {
                 if(response.isSuccessful()){
-                    RespuestaSesion probando = response.body();
                     respuestaSesion = response.body();
-                    Log.e(TAG,"token : " + probando.getToken());
-                    Log.e(TAG,"tipo : " + probando.getTipo());
+                    Log.e(TAG,"token : " + respuestaSesion.getToken());
+                    Log.e(TAG,"tipo : " + respuestaSesion.getTipo());
                 }
             }
 
@@ -116,7 +127,48 @@ public class HomeActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
+            Bundle bundle = getIntent().getExtras();
+            Boolean cancelar = false;
+            TokenRequest nuevo = (TokenRequest) bundle.getSerializable("datos_usuario");
             Intent intent = new Intent(HomeActivity.this,PrincipalActivity.class);
+            intent.putExtra("datos_usuario",nuevo);
+            intent.putExtra("tokentipo",respuestaSesion);
+            intent.putExtra("cancelar",cancelar);
+            startActivity(intent);
+            progressDialog.dismiss();
+        }
+    }
+    public class TareaMoversePrincipalCancelar extends AsyncTask<Void,Void,Void>{
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(HomeActivity.this);
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDialog.setMessage("Procesando...");
+            progressDialog.setCancelable(true);
+            progressDialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            Bundle bundle = getIntent().getExtras();
+            Boolean cancelar = true;
+            TokenRequest nuevo = (TokenRequest) bundle.getSerializable("datos_usuario");
+            Intent intent = new Intent(HomeActivity.this,PrincipalActivity.class);
+            intent.putExtra("datos_usuario",nuevo);
+            intent.putExtra("tokentipo",respuestaSesion);
+            intent.putExtra("cancelar",cancelar);
             startActivity(intent);
             progressDialog.dismiss();
         }
@@ -152,6 +204,7 @@ public class HomeActivity extends AppCompatActivity {
             progressDialog.dismiss();
         }
     }
+
 
     public void cerrarSesion(){
         LoginManager.getInstance().logOut();
