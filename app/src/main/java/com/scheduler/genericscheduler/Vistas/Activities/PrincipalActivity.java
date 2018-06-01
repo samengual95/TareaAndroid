@@ -19,6 +19,8 @@ public class PrincipalActivity extends AppCompatActivity {
     private EmpleadosFragment empleadosFragment;
     private EmpleadoServiciosFragment empleadoServiciosFragment;
     private CancelarFragment cancelarFragment;
+    private RespuestaSesion respuestaSesion;
+    private Boolean cancelar;
     private ProgressDialog progressDialog;
 
     @Override
@@ -26,13 +28,12 @@ public class PrincipalActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_principal);
         Bundle bundle = getIntent().getExtras();
-        TokenRequest nuevo = (TokenRequest) bundle.getSerializable("datos_usuario");
-        RespuestaSesion respuestaSesion = (RespuestaSesion) bundle.getSerializable("tokentipo");
-        Boolean cancelar = (Boolean) bundle.get("cancelar");
-        if (cancelar==true)
+        respuestaSesion = (RespuestaSesion) bundle.getSerializable("tokentipo");
+        cancelar = bundle.getBoolean("cancelar");
+        if (cancelar.equals(true))
             new TareaCambiarAFragmentCancelar().execute();
         else{
-            if(respuestaSesion.getTipo()=="EMPLEADO")
+            if (respuestaSesion.getTipo().equals("EMPLEADO"))
                 new TareaCambiarAFragmentServicios().execute();
             else
                 new TareaCambiarAFragmentEmpleados().execute();

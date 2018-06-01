@@ -44,6 +44,7 @@ public class CancelarFragment extends Fragment {
     private String mParam2;
     private ListView list_view_cancelar;
     private CancelarReservaAdaptador cancelarReservaAdaptador;
+    private RespuestaSesion respuestaSesion;
     private ProgressDialog progressDialog;
     private Retrofit retrofit;
     private Reserva reserva;
@@ -78,7 +79,12 @@ public class CancelarFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_cancelar, container, false);
         list_view_cancelar = view.findViewById(R.id.list_view_cancelar);
         cancelarReservaAdaptador = new CancelarReservaAdaptador(getActivity());
-        new TareaCargarReservas().execute();
+        Bundle bundle = getActivity().getIntent().getExtras();
+        respuestaSesion = (RespuestaSesion) bundle.getSerializable("tokentipo");
+        if (respuestaSesion.getTipo().equals("CLIENTE"))
+            new TareaCargarReservas().execute();
+        else
+            new TareaCargarReservasEmpleado().execute();
         list_view_cancelar.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -114,9 +120,7 @@ public class CancelarFragment extends Fragment {
 
     private void obtenerDatos() {
         InterfaceServicios service = retrofit.create(InterfaceServicios.class);
-        Bundle bundle = getActivity().getIntent().getExtras();
-        RespuestaSesion respuestaSesion = (RespuestaSesion) bundle.getSerializable("tokentipo");
-        Call<ArrayList<Reserva>> reservaCall = service.ObtenerReservas(/*respuestaSesion.getToken()*/);
+        Call<ArrayList<Reserva>> reservaCall = service.ObtenerReservas(respuestaSesion.getToken());
         reservaCall.enqueue(new Callback<ArrayList<Reserva>>() {
             @Override
             public void onResponse(Call<ArrayList<Reserva>> call, Response<ArrayList<Reserva>> response) {
@@ -134,11 +138,33 @@ public class CancelarFragment extends Fragment {
         });
 
     }
+
+    private void obtenerDatosEmpleado() {
+        InterfaceServicios service = retrofit.create(InterfaceServicios.class);
+        Call<ArrayList<Reserva>> reservaCall = service.ObtenerReservasEmpleado(respuestaSesion.getToken());
+        reservaCall.enqueue(new Callback<ArrayList<Reserva>>() {
+            @Override
+            public void onResponse(Call<ArrayList<Reserva>> call, Response<ArrayList<Reserva>> response) {
+                ArrayList<Reserva> resp = response.body();
+                Log.e(TAG,"paso");
+                for (int i=0;i<resp.size();i++)
+                    Log.e(TAG,"idreserva: "+ resp.get(i).getId());
+                cancelarReservaAdaptador.AdicionarListaReservas(resp);
+            }
+
+            @Override
+            public void onFailure(Call<ArrayList<Reserva>> call, Throwable t) {
+
+            }
+        });
+
+    }
+
     public void CancelarReserva(){
         InterfaceServicios service = retrofit.create(InterfaceServicios.class);
         Bundle bundle = getActivity().getIntent().getExtras();
         RespuestaSesion respuestaSesion = (RespuestaSesion) bundle.getSerializable("tokentipo");
-        Call<Status> statusCall = service.CancelarReserva(reserva.getId()/*respuestaSesion.getToken()*/);
+        Call<Status> statusCall = service.CancelarReserva(reserva.getId(),respuestaSesion.getToken());
         statusCall.enqueue(new Callback<Status>() {
             @Override
             public void onResponse(Call<Status> call, Response<Status> response) {
@@ -183,6 +209,36 @@ public class CancelarFragment extends Fragment {
             progressDialog.dismiss();
         }
     }
+
+    public class TareaCargarReservasEmpleado extends AsyncTask<Void,Void,Void> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(getActivity());
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDialog.setMessage("Procesando...");
+            progressDialog.setCancelable(true);
+            progressDialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            retrofit = new Retrofit.Builder()
+                    .baseUrl("http://18.219.46.139/grupo1/")
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+            obtenerDatosEmpleado();
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            list_view_cancelar.setAdapter(cancelarReservaAdaptador);
+            progressDialog.dismiss();
+        }
+    }
+
     public class TareaCancelarReserva extends AsyncTask<Void,Void,Void> {
         @Override
         protected void onPreExecute() {
@@ -237,6 +293,7 @@ public class CancelarFragment extends Fragment {
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
             Intent intent = new Intent(getActivity(),HomeActivity.class);
+            intent.putExtra("tokentipo",respuestaSesion);
             startActivity(intent);
             progressDialog.dismiss();
         }

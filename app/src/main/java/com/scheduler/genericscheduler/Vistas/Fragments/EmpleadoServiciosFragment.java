@@ -19,6 +19,7 @@ import android.widget.ListView;
 import com.scheduler.genericscheduler.Controladores.InterfaceServicios;
 import com.scheduler.genericscheduler.Controladores.ServiciosAdaptador;
 import com.scheduler.genericscheduler.Modelos.Empleado;
+import com.scheduler.genericscheduler.Modelos.RespuestaSesion;
 import com.scheduler.genericscheduler.Modelos.Servicio;
 import com.scheduler.genericscheduler.R;
 
@@ -52,6 +53,8 @@ public class EmpleadoServiciosFragment extends Fragment {
     private ServiciosAdaptador serviciosAdaptador;
     private ListView listViewServicios;
     private EmpleadoHorariosFragment empleadoHorariosFragment;
+    private RespuestaSesion respuestaSesion;
+    private Empleado empleado;
     private Retrofit retrofit;
 
     private static final String TAG = "Probando";
@@ -95,7 +98,13 @@ public class EmpleadoServiciosFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_empleado_servicios, container, false);
         listViewServicios = view.findViewById(R.id.list_view_servicios);
         serviciosAdaptador = new ServiciosAdaptador(getActivity());
-        new TareaCargarDatosServicios().execute();
+        Bundle bundle = getActivity().getIntent().getExtras();
+        empleado = (Empleado) bundle.getSerializable("empleado_seleccionado");
+        respuestaSesion = (RespuestaSesion) bundle.getSerializable("tokentipo");
+        if (respuestaSesion.getTipo().equals("EMPLEADO"))
+            new TareaCargarDatosServicios().execute();
+        else
+            new TareaCargarDatosServiciosCliente().execute();
         listViewServicios.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -141,8 +150,36 @@ public class EmpleadoServiciosFragment extends Fragment {
     }
 
     private void obtenerDatosServicio() {
-        Empleado d = (Empleado) getActivity().getIntent().getExtras().getSerializable("empleado_seleccionado");
-        serviciosAdaptador.AdicionarListaServicios(d.getServicios());
+        InterfaceServicios service = retrofit.create(InterfaceServicios.class);
+        Call<ArrayList<Servicio>> servicioListCall = service.ObtenerListaServicios(respuestaSesion.getToken());//aca tengo que pasar token empleado
+        servicioListCall.enqueue(new Callback<ArrayList<Servicio>>() {
+            @Override
+            public void onResponse(Call<ArrayList<Servicio>> call, Response<ArrayList<Servicio>> response) {
+                ArrayList<Servicio> resp = response.body();
+                serviciosAdaptador.AdicionarListaServicios(resp);
+            }
+
+            @Override
+            public void onFailure(Call<ArrayList<Servicio>> call, Throwable t) {
+
+            }
+        });
+    }
+    private void obtenerDatosServicioCliente() {
+        InterfaceServicios service = retrofit.create(InterfaceServicios.class);
+        Call<ArrayList<Servicio>> servicioListCall = service.ObtenerListaServiciosCliente(empleado.getId().toString(),respuestaSesion.getToken());
+        servicioListCall.enqueue(new Callback<ArrayList<Servicio>>() {
+            @Override
+            public void onResponse(Call<ArrayList<Servicio>> call, Response<ArrayList<Servicio>> response) {
+                ArrayList<Servicio> resp = response.body();
+                serviciosAdaptador.AdicionarListaServicios(resp);
+            }
+
+            @Override
+            public void onFailure(Call<ArrayList<Servicio>> call, Throwable t) {
+
+            }
+        });
     }
 
 
@@ -159,6 +196,10 @@ public class EmpleadoServiciosFragment extends Fragment {
 
         @Override
         protected Void doInBackground(Void... voids) {
+            retrofit = new Retrofit.Builder()
+                    .baseUrl("http://18.219.46.139/grupo1/")
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
             obtenerDatosServicio();
             return null;
         }
@@ -200,6 +241,34 @@ public class EmpleadoServiciosFragment extends Fragment {
             fragmentTransaction.replace(R.id.frame_contenedor,empleadoHorariosFragment);
             fragmentTransaction.addToBackStack(null);
             fragmentTransaction.commit();
+            progressDialog.dismiss();
+        }
+    }
+    public class TareaCargarDatosServiciosCliente extends AsyncTask<Void,Void,Void>{
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(getActivity());
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDialog.setMessage("Procesando...");
+            progressDialog.setCancelable(true);
+            progressDialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            retrofit = new Retrofit.Builder()
+                    .baseUrl("http://18.219.46.139/grupo1/")
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+            obtenerDatosServicioCliente();
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            listViewServicios.setAdapter(serviciosAdaptador);
             progressDialog.dismiss();
         }
     }

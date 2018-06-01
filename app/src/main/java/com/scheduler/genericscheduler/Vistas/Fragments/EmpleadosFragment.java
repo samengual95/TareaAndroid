@@ -18,6 +18,7 @@ import com.scheduler.genericscheduler.Controladores.EmpleadoAdaptador;
 import com.scheduler.genericscheduler.Controladores.InterfaceServicios;
 import com.scheduler.genericscheduler.Modelos.Empleado;
 import com.scheduler.genericscheduler.Modelos.EmpleadoRespuesta;
+import com.scheduler.genericscheduler.Modelos.RespuestaSesion;
 import com.scheduler.genericscheduler.R;
 
 import java.util.ArrayList;
@@ -44,6 +45,7 @@ public class EmpleadosFragment extends Fragment {
     private EmpleadoAdaptador empleadoAdaptador;
     private ListView listViewEmpleado;
     private EmpleadoServiciosFragment empleadoServiciosFragment;
+    private RespuestaSesion respuestaSesion;
 
     private OnFragmentInteractionListener mListener;
 
@@ -67,7 +69,7 @@ public class EmpleadosFragment extends Fragment {
         args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
-    }
+     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -84,6 +86,8 @@ public class EmpleadosFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_empleados, container, false);
         listViewEmpleado = view.findViewById(R.id.list_view_empleado);
         empleadoAdaptador = new EmpleadoAdaptador(getActivity());
+        Bundle bundle = getActivity().getIntent().getExtras();
+        respuestaSesion = (RespuestaSesion) bundle.getSerializable("tokentipo");
         new TareaCargarDatosEmpleados().execute();
         listViewEmpleado.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -98,7 +102,7 @@ public class EmpleadosFragment extends Fragment {
 
     private void obtenerDatos() {
         InterfaceServicios service = retrofit.create(InterfaceServicios.class);
-        Call<ArrayList<Empleado>> empleadoRespuestaCall = service.ObtenerListaEmpleados();
+        Call<ArrayList<Empleado>> empleadoRespuestaCall = service.ObtenerListaEmpleados(respuestaSesion.getToken());
         empleadoRespuestaCall.enqueue(new Callback<ArrayList<Empleado>>() {
             @Override
             public void onResponse(Call<ArrayList<Empleado>> call, Response<ArrayList<Empleado>> response) {

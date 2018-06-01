@@ -21,8 +21,10 @@ import android.widget.Toast;
 
 import com.scheduler.genericscheduler.Controladores.HorarioAdaptador;
 import com.scheduler.genericscheduler.Controladores.InterfaceServicios;
+import com.scheduler.genericscheduler.Modelos.Empleado;
 import com.scheduler.genericscheduler.Modelos.Horario;
 import com.scheduler.genericscheduler.Modelos.ReservaEmpleadoConfirmada;
+import com.scheduler.genericscheduler.Modelos.RespuestaSesion;
 import com.scheduler.genericscheduler.Modelos.Servicio;
 import com.scheduler.genericscheduler.R;
 import com.scheduler.genericscheduler.Vistas.Activities.HomeActivity;
@@ -59,6 +61,9 @@ public class EmpleadoHorariosFragment extends Fragment {
     private String fechaReserva;
     private String s;
     private String s1;
+    private Empleado empleado;
+    private RespuestaSesion respuestaSesion;
+    private Servicio servicio;
     private static final String TAG = "Probando";
     private OnFragmentInteractionListener mListener;
     private ProgressDialog progressDialog;
@@ -90,6 +95,10 @@ public class EmpleadoHorariosFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_empleado_horarios, container, false);
+        Bundle bundle = getActivity().getIntent().getExtras();
+        empleado = (Empleado) getActivity().getIntent().getExtras().getSerializable("empleado_seleccionado");
+        servicio = (Servicio) getActivity().getIntent().getExtras().getSerializable("servicio_seleccionado");
+        respuestaSesion = (RespuestaSesion) bundle.getSerializable("tokentipo");
         textoReserva=view.findViewById(R.id.tvDia);
         botonReserva = view.findViewById(R.id.ButtonDia);
         botonOK = view.findViewById(R.id.ButtonOK);
@@ -114,7 +123,10 @@ public class EmpleadoHorariosFragment extends Fragment {
                         e.printStackTrace();
                     }
                     s = fechaReserva.toString();
-                    new TareaReservar().execute();
+                    if (respuestaSesion.getTipo().equals("CLIENTE"))
+                        new TareaReservar().execute();
+                    else
+                        new TareaReservarEmpleado().execute();
                 }
             }
         });
@@ -149,7 +161,10 @@ public class EmpleadoHorariosFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 horarioAdaptador = new HorarioAdaptador(getActivity());
-                new TareaCargarHorarios().execute();
+                if (respuestaSesion.getTipo().equals("CLIENTE"))
+                    new TareaCargarHorarios().execute();
+                else
+                    new TareaCargarHorariosEmpleado().execute();
             }
         });
         return view;
@@ -157,7 +172,24 @@ public class EmpleadoHorariosFragment extends Fragment {
 
     private void obtenerDatos() {
         InterfaceServicios service = retrofit.create(InterfaceServicios.class);
-        Call<ArrayList<Horario>> horarioCall = service.ObtenerListaHorarios(s1);
+        Call<ArrayList<Horario>> horarioCall = service.ObtenerListaHorarios(s1,empleado.getId(),respuestaSesion.getToken());
+        horarioCall.enqueue(new Callback<ArrayList<Horario>>() {
+            @Override
+            public void onResponse(Call<ArrayList<Horario>> call, Response<ArrayList<Horario>> response) {
+                ArrayList<Horario> resp = response.body();
+                horarioAdaptador.AdicionarListaHorarios(resp);
+            }
+
+            @Override
+            public void onFailure(Call<ArrayList<Horario>> call, Throwable t) {
+                Log.e(TAG,"hayReserva" );
+            }
+        });
+    }
+
+    private void obtenerDatosEmpleado() {
+        InterfaceServicios service = retrofit.create(InterfaceServicios.class);
+        Call<ArrayList<Horario>> horarioCall = service.ObtenerListaHorariosEmpleado(s1,respuestaSesion.getToken());
         horarioCall.enqueue(new Callback<ArrayList<Horario>>() {
             @Override
             public void onResponse(Call<ArrayList<Horario>> call, Response<ArrayList<Horario>> response) {
@@ -174,8 +206,23 @@ public class EmpleadoHorariosFragment extends Fragment {
 
     private void ReservarEmpleado(){
         InterfaceServicios service = retrofit.create(InterfaceServicios.class);
-        Servicio servicio = (Servicio) getActivity().getIntent().getExtras().getSerializable("servicio_seleccionado");
-        Call<ReservaEmpleadoConfirmada> reservaEmpleadoCall = service.ReservarEmpleado(s,servicio.getId());
+        Call<ReservaEmpleadoConfirmada> reservaEmpleadoCall = service.ReservarEmpleado(s,empleado.getId(),servicio.getId(),respuestaSesion.getToken());
+        reservaEmpleadoCall.enqueue(new Callback<ReservaEmpleadoConfirmada>() {
+            @Override
+            public void onResponse(Call<ReservaEmpleadoConfirmada> call, Response<ReservaEmpleadoConfirmada> response) {
+                ReservaEmpleadoConfirmada resp = response.body();
+                Toast toast = Toast.makeText(getActivity(), "Reserva exitosa", Toast.LENGTH_SHORT);
+                toast.show();
+            }
+            @Override
+            public void onFailure(Call<ReservaEmpleadoConfirmada> call, Throwable t) {
+            }
+        });
+    }
+
+    private void ReservarEmpleadoEmpleado(){
+        InterfaceServicios service = retrofit.create(InterfaceServicios.class);
+        Call<ReservaEmpleadoConfirmada> reservaEmpleadoCall = service.ReservarEmpleadoEmpleado(s,servicio.getId(),respuestaSesion.getToken());
         reservaEmpleadoCall.enqueue(new Callback<ReservaEmpleadoConfirmada>() {
             @Override
             public void onResponse(Call<ReservaEmpleadoConfirmada> call, Response<ReservaEmpleadoConfirmada> response) {
@@ -240,6 +287,35 @@ public class EmpleadoHorariosFragment extends Fragment {
         }
     }
 
+    public class TareaCargarHorariosEmpleado extends AsyncTask<Void,Void,Void> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(getActivity());
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDialog.setMessage("Procesando...");
+            progressDialog.setCancelable(true);
+            progressDialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            retrofit = new Retrofit.Builder()
+                    .baseUrl("http://18.219.46.139/grupo1/")
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+            obtenerDatosEmpleado();
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            listViewHorarios.setAdapter(horarioAdaptador);
+            progressDialog.dismiss();
+        }
+    }
+
     public class TareaReservar extends AsyncTask<Void,Void,Void> {
         @Override
         protected void onPreExecute() {
@@ -258,6 +334,35 @@ public class EmpleadoHorariosFragment extends Fragment {
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
             ReservarEmpleado();
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            new TareaCambiarFragmentHome().execute();
+            progressDialog.dismiss();
+        }
+    }
+
+    public class TareaReservarEmpleado extends AsyncTask<Void,Void,Void> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(getActivity());
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDialog.setMessage("Procesando...");
+            progressDialog.setCancelable(true);
+            progressDialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            retrofit = new Retrofit.Builder()
+                    .baseUrl("http://18.219.46.139/grupo1/")
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+            ReservarEmpleadoEmpleado();
             return null;
         }
 
@@ -294,6 +399,7 @@ public class EmpleadoHorariosFragment extends Fragment {
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
             Intent intent = new Intent(getActivity(),HomeActivity.class);
+            intent.putExtra("tokentipo",respuestaSesion);
             startActivity(intent);
             progressDialog.dismiss();
         }

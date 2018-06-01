@@ -29,6 +29,8 @@ public class HomeActivity extends AppCompatActivity {
     private Button boton,boton1,boton2;
     private Retrofit retrofit;
     private RespuestaSesion respuestaSesion;
+    private TokenRequest nuevo;
+    private Boolean cancelar = false;
     private static final String TAG = "Prueba3";
 
     @Override
@@ -40,8 +42,14 @@ public class HomeActivity extends AppCompatActivity {
         }
         else{
             Bundle bundle = getIntent().getExtras();
-            TokenRequest nuevo = (TokenRequest) bundle.getSerializable("datos_usuario");
-            mandarDatos(nuevo);
+            respuestaSesion = (RespuestaSesion) bundle.getSerializable("tokentipo");
+            try{
+                 Log.e(TAG,"token:" + respuestaSesion.getToken());
+            }catch(NullPointerException e){
+                nuevo = (TokenRequest) bundle.getSerializable("datos_usuario");
+                mandarDatos();
+                respuestaSesion = new RespuestaSesion();
+            }
             setContentView(R.layout.activity_home);
             boton1 = findViewById(R.id.button2);
             boton1.setOnClickListener(new View.OnClickListener() {
@@ -51,7 +59,6 @@ public class HomeActivity extends AppCompatActivity {
                 }
             });
             boton = findViewById(R.id.button1);
-            respuestaSesion = new RespuestaSesion();
             boton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -66,33 +73,22 @@ public class HomeActivity extends AppCompatActivity {
                     new TareaMoversePrincipalCancelar().execute();
                 }
             });
-
-
-
-
         }
-
-
-
-
-
     }
 
-    public void mandarDatos(TokenRequest n){
+    public void mandarDatos(){
         retrofit = new Retrofit.Builder()
                 .baseUrl("http://18.219.46.139/grupo1/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         InterfaceServicios service = retrofit.create(InterfaceServicios.class);
-        Call<RespuestaSesion> respuesta = service.ObtenerToken(n);
+        Call<RespuestaSesion> respuesta = service.ObtenerToken(nuevo);
         respuesta.enqueue(new Callback<RespuestaSesion>() {
             @Override
             public void onResponse(Call<RespuestaSesion> call, Response<RespuestaSesion> response) {
-                if(response.isSuccessful()){
                     respuestaSesion = response.body();
                     Log.e(TAG,"token : " + respuestaSesion.getToken());
                     Log.e(TAG,"tipo : " + respuestaSesion.getTipo());
-                }
             }
 
             @Override
@@ -101,6 +97,7 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
     }
+
     private ProgressDialog progressDialog;
 
     public class TareaMoversePrincipal extends AsyncTask<Void,Void,Void>{
@@ -127,13 +124,8 @@ public class HomeActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            Bundle bundle = getIntent().getExtras();
-            Boolean cancelar = false;
-            TokenRequest nuevo = (TokenRequest) bundle.getSerializable("datos_usuario");
             Intent intent = new Intent(HomeActivity.this,PrincipalActivity.class);
-            intent.putExtra("datos_usuario",nuevo);
             intent.putExtra("tokentipo",respuestaSesion);
-            intent.putExtra("cancelar",cancelar);
             startActivity(intent);
             progressDialog.dismiss();
         }
@@ -162,11 +154,8 @@ public class HomeActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            Bundle bundle = getIntent().getExtras();
-            Boolean cancelar = true;
-            TokenRequest nuevo = (TokenRequest) bundle.getSerializable("datos_usuario");
+            cancelar = true;
             Intent intent = new Intent(HomeActivity.this,PrincipalActivity.class);
-            intent.putExtra("datos_usuario",nuevo);
             intent.putExtra("tokentipo",respuestaSesion);
             intent.putExtra("cancelar",cancelar);
             startActivity(intent);
