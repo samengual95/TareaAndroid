@@ -81,7 +81,7 @@ public class HomeActivity extends AppCompatActivity {
 
     public void mandarDatos(){
         retrofit = new Retrofit.Builder()
-                .baseUrl("http://18.219.46.139/grupo1/")
+                .baseUrl("http://18.218.149.158/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         InterfaceServicios service = retrofit.create(InterfaceServicios.class);

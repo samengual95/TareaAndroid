@@ -272,7 +272,7 @@ public class EmpleadoHorariosFragment extends Fragment {
         @Override
         protected Void doInBackground(Void... voids) {
             retrofit = new Retrofit.Builder()
-                    .baseUrl("http://18.219.46.139/grupo1/")
+                    .baseUrl("http://18.218.149.158/")
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
             obtenerDatos();
@@ -301,7 +301,7 @@ public class EmpleadoHorariosFragment extends Fragment {
         @Override
         protected Void doInBackground(Void... voids) {
             retrofit = new Retrofit.Builder()
-                    .baseUrl("http://18.219.46.139/grupo1/")
+                    .baseUrl("http://18.218.149.158/")
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
             obtenerDatosEmpleado();
@@ -330,7 +330,7 @@ public class EmpleadoHorariosFragment extends Fragment {
         @Override
         protected Void doInBackground(Void... voids) {
             retrofit = new Retrofit.Builder()
-                    .baseUrl("http://18.219.46.139/grupo1/")
+                    .baseUrl("http://18.218.149.158/")
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
             ReservarEmpleado();
@@ -359,7 +359,7 @@ public class EmpleadoHorariosFragment extends Fragment {
         @Override
         protected Void doInBackground(Void... voids) {
             retrofit = new Retrofit.Builder()
-                    .baseUrl("http://18.219.46.139/grupo1/")
+                    .baseUrl("http://18.218.149.158/")
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
             ReservarEmpleadoEmpleado();
