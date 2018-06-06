@@ -3,12 +3,15 @@ package com.scheduler.genericscheduler.Vistas.Activities;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 
 import com.facebook.AccessToken;
 import com.facebook.login.LoginManager;
@@ -16,7 +19,9 @@ import com.scheduler.genericscheduler.Controladores.InterfaceServicios;
 import com.scheduler.genericscheduler.Modelos.RespuestaSesion;
 import com.scheduler.genericscheduler.Modelos.TokenRequest;
 import com.scheduler.genericscheduler.R;
+import com.squareup.picasso.Picasso;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -27,6 +32,7 @@ public class HomeActivity extends AppCompatActivity {
 
 
     private Button boton,boton1,boton2;
+    private CircleImageView imageView;
     private Retrofit retrofit;
     private RespuestaSesion respuestaSesion;
     private TokenRequest nuevo;
@@ -76,12 +82,17 @@ public class HomeActivity extends AppCompatActivity {
                     new TareaMoversePrincipalCancelar().execute();
                 }
             });
+            imageView = findViewById(R.id.imagen_perfil_facebook);
+            Picasso.get()
+                    .load("https://graph.facebook.com/v2.2/" + nuevo.getFacebookid() + "/picture?height=120&type=normal")
+                    .resize(85,85)
+                    .into(imageView);
         }
     }
 
     public void mandarDatos(){
         retrofit = new Retrofit.Builder()
-                .baseUrl("http://18.219.46.139/grupo1/")
+                .baseUrl("http://18.218.149.158/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         InterfaceServicios service = retrofit.create(InterfaceServicios.class);

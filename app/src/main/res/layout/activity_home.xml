@@ -8,6 +8,7 @@
     android:theme="@style/AppTheme.NoActionBar"
     android:background="@color/color_fondo">
 
+
     <Button
         android:id="@+id/button1"
         android:layout_width="wrap_content"
@@ -44,5 +45,13 @@
         android:layout_marginTop="-56dp"
         android:textColor="@color/colorBlanco"
         android:text="Cancelar Reserva" />
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/imagen_perfil_facebook"
+        android:layout_width="85dp"
+        android:layout_height="85dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="44dp" />
 
 </RelativeLayout>

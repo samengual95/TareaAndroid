@@ -17,9 +17,6 @@ import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 
-/**
- * Created by Clara on 12/05/2018.
- */
 
 public interface InterfaceServicios {
 

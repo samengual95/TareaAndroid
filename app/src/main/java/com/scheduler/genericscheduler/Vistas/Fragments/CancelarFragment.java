@@ -195,7 +195,7 @@ public class CancelarFragment extends Fragment {
         @Override
         protected Void doInBackground(Void... voids) {
             retrofit = new Retrofit.Builder()
-                    .baseUrl("http://18.219.46.139/grupo1/")
+                    .baseUrl("http://18.218.149.158/")
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
             obtenerDatos();
@@ -224,7 +224,7 @@ public class CancelarFragment extends Fragment {
         @Override
         protected Void doInBackground(Void... voids) {
             retrofit = new Retrofit.Builder()
-                    .baseUrl("http://18.219.46.139/grupo1/")
+                    .baseUrl("http://18.218.149.158/")
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
             obtenerDatosEmpleado();
@@ -253,7 +253,7 @@ public class CancelarFragment extends Fragment {
         @Override
         protected Void doInBackground(Void... voids) {
             retrofit = new Retrofit.Builder()
-                    .baseUrl("http://18.219.46.139/grupo1/")
+                    .baseUrl("http://18.218.149.158/")
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
             CancelarReserva();
