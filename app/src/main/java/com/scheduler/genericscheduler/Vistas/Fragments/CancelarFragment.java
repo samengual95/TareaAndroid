@@ -1,8 +1,11 @@
 package com.scheduler.genericscheduler.Vistas.Fragments;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -47,7 +50,10 @@ public class CancelarFragment extends Fragment {
     private RespuestaSesion respuestaSesion;
     private ProgressDialog progressDialog;
     private Retrofit retrofit;
+    private Boolean cancelar;
     private Reserva reserva;
+    private String token;
+    private String tipo;
 
     private OnFragmentInteractionListener mListener;
 
@@ -79,9 +85,10 @@ public class CancelarFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_cancelar, container, false);
         list_view_cancelar = view.findViewById(R.id.list_view_cancelar);
         cancelarReservaAdaptador = new CancelarReservaAdaptador(getActivity());
-        Bundle bundle = getActivity().getIntent().getExtras();
-        respuestaSesion = (RespuestaSesion) bundle.getSerializable("tokentipo");
-        if (respuestaSesion.getTipo().equals("CLIENTE"))
+        SharedPreferences prefs = getActivity().getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE);
+        token = prefs.getString("token","algo");
+        tipo = prefs.getString("tipo","algo");
+        if (tipo.equals("CLIENTE"))
             new TareaCargarReservas().execute();
         else
             new TareaCargarReservasEmpleado().execute();
@@ -89,7 +96,24 @@ public class CancelarFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 reserva = (Reserva) cancelarReservaAdaptador.getItem(position);
-                new TareaCancelarReserva().execute();
+                AlertDialog.Builder dialogo1 = new AlertDialog.Builder(getActivity());
+                dialogo1.setTitle("Cancelar Reserva");
+                dialogo1.setMessage("¿ Desea cancelar esta reserva ?");
+                dialogo1.setCancelable(false);
+                dialogo1.setPositiveButton("Confirmar", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        new TareaCancelarReserva().execute();
+                    }
+                });
+                dialogo1.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+                dialogo1.show();
+
             }
         });
         return view;
@@ -120,7 +144,7 @@ public class CancelarFragment extends Fragment {
 
     private void obtenerDatos() {
         InterfaceServicios service = retrofit.create(InterfaceServicios.class);
-        Call<ArrayList<Reserva>> reservaCall = service.ObtenerReservas(respuestaSesion.getToken());
+        Call<ArrayList<Reserva>> reservaCall = service.ObtenerReservas(token);
         reservaCall.enqueue(new Callback<ArrayList<Reserva>>() {
             @Override
             public void onResponse(Call<ArrayList<Reserva>> call, Response<ArrayList<Reserva>> response) {
@@ -141,7 +165,7 @@ public class CancelarFragment extends Fragment {
 
     private void obtenerDatosEmpleado() {
         InterfaceServicios service = retrofit.create(InterfaceServicios.class);
-        Call<ArrayList<Reserva>> reservaCall = service.ObtenerReservasEmpleado(respuestaSesion.getToken());
+        Call<ArrayList<Reserva>> reservaCall = service.ObtenerReservasEmpleado(token);
         reservaCall.enqueue(new Callback<ArrayList<Reserva>>() {
             @Override
             public void onResponse(Call<ArrayList<Reserva>> call, Response<ArrayList<Reserva>> response) {
@@ -163,12 +187,16 @@ public class CancelarFragment extends Fragment {
     public void CancelarReserva(){
         InterfaceServicios service = retrofit.create(InterfaceServicios.class);
         Bundle bundle = getActivity().getIntent().getExtras();
-        RespuestaSesion respuestaSesion = (RespuestaSesion) bundle.getSerializable("tokentipo");
-        Call<Status> statusCall = service.CancelarReserva(reserva.getId(),respuestaSesion.getToken());
+        Call<Status> statusCall = service.CancelarReserva(reserva.getId(),token);
         statusCall.enqueue(new Callback<Status>() {
             @Override
             public void onResponse(Call<Status> call, Response<Status> response) {
                 Status ok = response.body();
+                cancelar = false;
+                SharedPreferences prefs = getActivity().getSharedPreferences("MisPreferencias",Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putBoolean("cancelar",cancelar);
+                editor.commit();
                 Toast toast = Toast.makeText(getActivity(), "Reserva Cancelada", Toast.LENGTH_SHORT);
                 toast.show();
             }
@@ -293,7 +321,6 @@ public class CancelarFragment extends Fragment {
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
             Intent intent = new Intent(getActivity(),HomeActivity.class);
-            intent.putExtra("tokentipo",respuestaSesion);
             startActivity(intent);
             progressDialog.dismiss();
         }
