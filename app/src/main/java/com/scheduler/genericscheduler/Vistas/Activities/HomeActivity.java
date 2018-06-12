@@ -2,7 +2,9 @@ package com.scheduler.genericscheduler.Vistas.Activities;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -37,6 +39,9 @@ public class HomeActivity extends AppCompatActivity {
     private RespuestaSesion respuestaSesion;
     private TokenRequest nuevo;
     private Boolean cancelar = false;
+    private String token;
+    private String fbId;
+    private String tipo;
     private static final String TAG = "Prueba3";
 
 
@@ -51,11 +56,10 @@ public class HomeActivity extends AppCompatActivity {
         }
         else{
             Bundle bundle = getIntent().getExtras();
-            respuestaSesion = (RespuestaSesion) bundle.getSerializable("tokentipo");
-            try{
-                 Log.e(TAG,"token:" + respuestaSesion.getToken());
-            }catch(NullPointerException e){
-                nuevo = (TokenRequest) bundle.getSerializable("datos_usuario");
+            nuevo = (TokenRequest) bundle.getSerializable("datos_usuario");
+            SharedPreferences prefs = getSharedPreferences("MisPreferencias",Context.MODE_PRIVATE);
+            token = prefs.getString("token","not");
+            if (token.equals("not")){
                 mandarDatos();
                 respuestaSesion = new RespuestaSesion();
             }
@@ -83,8 +87,10 @@ public class HomeActivity extends AppCompatActivity {
                 }
             });
             imageView = findViewById(R.id.imagen_perfil_facebook);
+            prefs = getSharedPreferences("MisPreferencias",Context.MODE_PRIVATE);
+            fbId = prefs.getString("fbid","algo");
             Picasso.get()
-                    .load("https://graph.facebook.com/v2.2/" + nuevo.getFacebookid() + "/picture?height=120&type=normal")
+                    .load("https://graph.facebook.com/v2.2/" + fbId + "/picture?height=120&type=normal")
                     .resize(85,85)
                     .into(imageView);
         }
@@ -101,7 +107,11 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<RespuestaSesion> call, Response<RespuestaSesion> response) {
                     respuestaSesion = response.body();
-                    Log.e(TAG,"token : " + respuestaSesion.getToken());
+                    SharedPreferences prefs = getSharedPreferences("MisPreferencias",Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = prefs.edit();
+                    editor.putString("token", respuestaSesion.getToken());
+                    editor.putString("tipo", respuestaSesion.getTipo());
+                    editor.commit();
                     Log.e(TAG,"tipo : " + respuestaSesion.getTipo());
             }
 
@@ -169,9 +179,11 @@ public class HomeActivity extends AppCompatActivity {
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
             cancelar = true;
+            SharedPreferences prefs = getSharedPreferences("MisPreferencias",Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putBoolean("cancelar",cancelar);
+            editor.commit();
             Intent intent = new Intent(HomeActivity.this,PrincipalActivity.class);
-            intent.putExtra("tokentipo",respuestaSesion);
-            intent.putExtra("cancelar",cancelar);
             startActivity(intent);
             progressDialog.dismiss();
         }
@@ -210,6 +222,9 @@ public class HomeActivity extends AppCompatActivity {
 
 
     public void cerrarSesion(){
+        SharedPreferences prefs = getSharedPreferences("MisPreferencias",Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit().clear();
+        editor.commit();
         LoginManager.getInstance().logOut();
     }
 }

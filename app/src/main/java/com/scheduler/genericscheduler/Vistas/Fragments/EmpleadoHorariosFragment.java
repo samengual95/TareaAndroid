@@ -1,9 +1,14 @@
 package com.scheduler.genericscheduler.Vistas.Fragments;
 
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -67,6 +72,9 @@ public class EmpleadoHorariosFragment extends Fragment {
     private static final String TAG = "Probando";
     private OnFragmentInteractionListener mListener;
     private ProgressDialog progressDialog;
+    private String token;
+    private String tipo;
+    private DialogFragment ConfirmarReserva;
 
     public EmpleadoHorariosFragment() {
         // Required empty public constructor
@@ -96,9 +104,11 @@ public class EmpleadoHorariosFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_empleado_horarios, container, false);
         Bundle bundle = getActivity().getIntent().getExtras();
+        SharedPreferences prefs = getActivity().getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE);
+        token = prefs.getString("token","algo");
+        tipo = prefs.getString("tipo","algo");
         empleado = (Empleado) getActivity().getIntent().getExtras().getSerializable("empleado_seleccionado");
         servicio = (Servicio) getActivity().getIntent().getExtras().getSerializable("servicio_seleccionado");
-        respuestaSesion = (RespuestaSesion) bundle.getSerializable("tokentipo");
         textoReserva=view.findViewById(R.id.tvDia);
         botonReserva = view.findViewById(R.id.ButtonDia);
         botonOK = view.findViewById(R.id.ButtonOK);
@@ -123,13 +133,31 @@ public class EmpleadoHorariosFragment extends Fragment {
                         e.printStackTrace();
                     }
                     s = fechaReserva.toString();
-                    if (respuestaSesion.getTipo().equals("CLIENTE"))
-                        new TareaReservar().execute();
-                    else
-                        new TareaReservarEmpleado().execute();
+
+
+                    AlertDialog.Builder dialogo1 = new AlertDialog.Builder(getActivity());
+                    dialogo1.setTitle("Confirmar Reserva");
+                    dialogo1.setMessage("¿ Desea agendar esta reserva ?");
+                    dialogo1.setCancelable(false);
+                    dialogo1.setPositiveButton("Confirmar", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialogo1, int id) {
+                            if (tipo.equals("CLIENTE"))
+                                new TareaReservar().execute();
+                            else
+                                new TareaReservarEmpleado().execute();
+                        }
+                    });
+                    dialogo1.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialogo1, int id) {
+                        }
+                    });
+                    dialogo1.show();
+
                 }
             }
         });
+
+
         botonReserva.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 final Calendar c = Calendar.getInstance();
@@ -161,7 +189,7 @@ public class EmpleadoHorariosFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 horarioAdaptador = new HorarioAdaptador(getActivity());
-                if (respuestaSesion.getTipo().equals("CLIENTE"))
+                if (tipo.equals("CLIENTE"))
                     new TareaCargarHorarios().execute();
                 else
                     new TareaCargarHorariosEmpleado().execute();
@@ -172,7 +200,7 @@ public class EmpleadoHorariosFragment extends Fragment {
 
     private void obtenerDatos() {
         InterfaceServicios service = retrofit.create(InterfaceServicios.class);
-        Call<ArrayList<Horario>> horarioCall = service.ObtenerListaHorarios(s1,empleado.getId(),respuestaSesion.getToken());
+        Call<ArrayList<Horario>> horarioCall = service.ObtenerListaHorarios(s1,empleado.getId(),token);
         horarioCall.enqueue(new Callback<ArrayList<Horario>>() {
             @Override
             public void onResponse(Call<ArrayList<Horario>> call, Response<ArrayList<Horario>> response) {
@@ -189,7 +217,7 @@ public class EmpleadoHorariosFragment extends Fragment {
 
     private void obtenerDatosEmpleado() {
         InterfaceServicios service = retrofit.create(InterfaceServicios.class);
-        Call<ArrayList<Horario>> horarioCall = service.ObtenerListaHorariosEmpleado(s1,respuestaSesion.getToken());
+        Call<ArrayList<Horario>> horarioCall = service.ObtenerListaHorariosEmpleado(s1,token);
         horarioCall.enqueue(new Callback<ArrayList<Horario>>() {
             @Override
             public void onResponse(Call<ArrayList<Horario>> call, Response<ArrayList<Horario>> response) {
@@ -206,7 +234,7 @@ public class EmpleadoHorariosFragment extends Fragment {
 
     private void ReservarEmpleado(){
         InterfaceServicios service = retrofit.create(InterfaceServicios.class);
-        Call<ReservaEmpleadoConfirmada> reservaEmpleadoCall = service.ReservarEmpleado(s,empleado.getId(),servicio.getId(),respuestaSesion.getToken());
+        Call<ReservaEmpleadoConfirmada> reservaEmpleadoCall = service.ReservarEmpleado(s,empleado.getId(),servicio.getId(),token);
         reservaEmpleadoCall.enqueue(new Callback<ReservaEmpleadoConfirmada>() {
             @Override
             public void onResponse(Call<ReservaEmpleadoConfirmada> call, Response<ReservaEmpleadoConfirmada> response) {
@@ -222,7 +250,7 @@ public class EmpleadoHorariosFragment extends Fragment {
 
     private void ReservarEmpleadoEmpleado(){
         InterfaceServicios service = retrofit.create(InterfaceServicios.class);
-        Call<ReservaEmpleadoConfirmada> reservaEmpleadoCall = service.ReservarEmpleadoEmpleado(s,servicio.getId(),respuestaSesion.getToken());
+        Call<ReservaEmpleadoConfirmada> reservaEmpleadoCall = service.ReservarEmpleadoEmpleado(s,servicio.getId(),token);
         reservaEmpleadoCall.enqueue(new Callback<ReservaEmpleadoConfirmada>() {
             @Override
             public void onResponse(Call<ReservaEmpleadoConfirmada> call, Response<ReservaEmpleadoConfirmada> response) {

@@ -3,6 +3,7 @@ package com.scheduler.genericscheduler.Vistas.Fragments;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -56,6 +57,8 @@ public class EmpleadoServiciosFragment extends Fragment {
     private RespuestaSesion respuestaSesion;
     private Empleado empleado;
     private Retrofit retrofit;
+    private String token;
+    private String tipo;
 
     private static final String TAG = "Probando";
 
@@ -100,8 +103,10 @@ public class EmpleadoServiciosFragment extends Fragment {
         serviciosAdaptador = new ServiciosAdaptador(getActivity());
         Bundle bundle = getActivity().getIntent().getExtras();
         empleado = (Empleado) bundle.getSerializable("empleado_seleccionado");
-        respuestaSesion = (RespuestaSesion) bundle.getSerializable("tokentipo");
-        if (respuestaSesion.getTipo().equals("EMPLEADO"))
+        SharedPreferences prefs = getActivity().getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE);
+        token = prefs.getString("token","algo");
+        tipo = prefs.getString("tipo","algo");
+        if (tipo.equals("EMPLEADO"))
             new TareaCargarDatosServicios().execute();
         else
             new TareaCargarDatosServiciosCliente().execute();
@@ -151,7 +156,7 @@ public class EmpleadoServiciosFragment extends Fragment {
 
     private void obtenerDatosServicio() {
         InterfaceServicios service = retrofit.create(InterfaceServicios.class);
-        Call<ArrayList<Servicio>> servicioListCall = service.ObtenerListaServicios(respuestaSesion.getToken());//aca tengo que pasar token empleado
+        Call<ArrayList<Servicio>> servicioListCall = service.ObtenerListaServicios(token);//aca tengo que pasar token empleado
         servicioListCall.enqueue(new Callback<ArrayList<Servicio>>() {
             @Override
             public void onResponse(Call<ArrayList<Servicio>> call, Response<ArrayList<Servicio>> response) {
@@ -167,7 +172,7 @@ public class EmpleadoServiciosFragment extends Fragment {
     }
     private void obtenerDatosServicioCliente() {
         InterfaceServicios service = retrofit.create(InterfaceServicios.class);
-        Call<ArrayList<Servicio>> servicioListCall = service.ObtenerListaServiciosCliente(empleado.getId().toString(),respuestaSesion.getToken());
+        Call<ArrayList<Servicio>> servicioListCall = service.ObtenerListaServiciosCliente(empleado.getId().toString(),token);
         servicioListCall.enqueue(new Callback<ArrayList<Servicio>>() {
             @Override
             public void onResponse(Call<ArrayList<Servicio>> call, Response<ArrayList<Servicio>> response) {

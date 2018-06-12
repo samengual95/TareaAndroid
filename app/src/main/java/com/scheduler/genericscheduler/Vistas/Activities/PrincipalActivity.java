@@ -1,6 +1,8 @@
 package com.scheduler.genericscheduler.Vistas.Activities;
 
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -19,6 +21,8 @@ public class PrincipalActivity extends AppCompatActivity {
     private EmpleadosFragment empleadosFragment;
     private EmpleadoServiciosFragment empleadoServiciosFragment;
     private CancelarFragment cancelarFragment;
+    private String tipo;
+    private String token;
     private RespuestaSesion respuestaSesion;
     private Boolean cancelar;
     private ProgressDialog progressDialog;
@@ -27,13 +31,13 @@ public class PrincipalActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_principal);
-        Bundle bundle = getIntent().getExtras();
-        respuestaSesion = (RespuestaSesion) bundle.getSerializable("tokentipo");
-        cancelar = bundle.getBoolean("cancelar");
+        SharedPreferences prefs = getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE);
+        cancelar = prefs.getBoolean("cancelar",false);
+        tipo = prefs.getString("tipo","Algo");
         if (cancelar.equals(true))
             new TareaCambiarAFragmentCancelar().execute();
         else{
-            if (respuestaSesion.getTipo().equals("EMPLEADO"))
+            if (tipo.equals("EMPLEADO"))
                 new TareaCambiarAFragmentServicios().execute();
             else
                 new TareaCambiarAFragmentEmpleados().execute();

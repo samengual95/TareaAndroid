@@ -2,6 +2,7 @@ package com.scheduler.genericscheduler.Vistas.Fragments;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -46,6 +47,8 @@ public class EmpleadosFragment extends Fragment {
     private ListView listViewEmpleado;
     private EmpleadoServiciosFragment empleadoServiciosFragment;
     private RespuestaSesion respuestaSesion;
+    private String token;
+    private String tipo;
 
     private OnFragmentInteractionListener mListener;
 
@@ -86,8 +89,8 @@ public class EmpleadosFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_empleados, container, false);
         listViewEmpleado = view.findViewById(R.id.list_view_empleado);
         empleadoAdaptador = new EmpleadoAdaptador(getActivity());
-        Bundle bundle = getActivity().getIntent().getExtras();
-        respuestaSesion = (RespuestaSesion) bundle.getSerializable("tokentipo");
+        SharedPreferences prefs = getActivity().getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE);
+        token = prefs.getString("token","algo");
         new TareaCargarDatosEmpleados().execute();
         listViewEmpleado.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -100,9 +103,10 @@ public class EmpleadosFragment extends Fragment {
         return view;
     }
 
+
     private void obtenerDatos() {
         InterfaceServicios service = retrofit.create(InterfaceServicios.class);
-        Call<ArrayList<Empleado>> empleadoRespuestaCall = service.ObtenerListaEmpleados(respuestaSesion.getToken());
+        Call<ArrayList<Empleado>> empleadoRespuestaCall = service.ObtenerListaEmpleados(token);
         empleadoRespuestaCall.enqueue(new Callback<ArrayList<Empleado>>() {
             @Override
             public void onResponse(Call<ArrayList<Empleado>> call, Response<ArrayList<Empleado>> response) {
