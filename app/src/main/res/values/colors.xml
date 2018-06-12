@@ -4,10 +4,11 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
     <color name="color_fondo">#232222</color>
-    <color name="colorAmarillo">#ffff22</color>
+    <color name="colorAmarillo">#d1d145</color>
     <color name="colorFondoToolbar">#548f82</color>
     <color name="colorLogout">#c7453e</color>
     <color name="colorGris">#767676</color>
     <color name="colorBlanco">#ffffff</color>
     <color name="colorGristClaro">#9b9b9b</color>
+    <color name="colorNegro">#0d0d0d</color>
 </resources>
