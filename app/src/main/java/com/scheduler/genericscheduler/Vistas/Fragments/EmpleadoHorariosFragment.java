@@ -63,9 +63,11 @@ public class EmpleadoHorariosFragment extends Fragment {
     private HorarioAdaptador horarioAdaptador;
     private Retrofit retrofit;
     private ListView listViewHorarios;
+    private String fechaActual;
     private String fecha,fecha3;
     private String fecha1;
     private String fechaReserva;
+    private Date ahora,d;
     private String s;
     private String s1;
     private Empleado empleado;
@@ -135,7 +137,8 @@ public class EmpleadoHorariosFragment extends Fragment {
                         SimpleDateFormat formateador1 = new SimpleDateFormat("dd/MM/yyyy");
                         fecha = textoReserva.getText().toString();
                         try {
-                            Date d = parseador.parse(fecha);
+                            d = parseador.parse(fecha);
+                            ahora = new Date();
                             fecha1 =  formateador.format(d);
                             fecha3 = formateador1.format(d);
                             textoReserva.setText(fecha3);

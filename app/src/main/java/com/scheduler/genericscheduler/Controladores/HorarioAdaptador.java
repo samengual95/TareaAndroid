@@ -1,6 +1,7 @@
 package com.scheduler.genericscheduler.Controladores;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,11 +45,15 @@ public class HorarioAdaptador extends BaseAdapter {
         tvHora.setText(horario.getHora());
         TextView tvReserva = convertView.findViewById(R.id.textViewReserva);
         if(horario.getHoraReservada()==null){
+            tvHora.setTextColor(Color.GREEN);
             tvReserva.setText("Disponible");
+            tvReserva.setTextColor(Color.GREEN);
         }
         else
         {
+            tvHora.setTextColor(Color.RED);
             tvReserva.setText("Reservada");
+            tvReserva.setTextColor(Color.RED);
         }
         return convertView;
     }

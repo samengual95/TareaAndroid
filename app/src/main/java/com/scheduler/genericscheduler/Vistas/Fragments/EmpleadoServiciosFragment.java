@@ -23,6 +23,8 @@ import com.scheduler.genericscheduler.Modelos.Empleado;
 import com.scheduler.genericscheduler.Modelos.RespuestaSesion;
 import com.scheduler.genericscheduler.Modelos.Servicio;
 import com.scheduler.genericscheduler.R;
+import com.scheduler.genericscheduler.Vistas.Activities.HomeActivity;
+import com.scheduler.genericscheduler.Vistas.Activities.LoginActivity;
 
 import java.util.ArrayList;
 
@@ -104,14 +106,6 @@ public class EmpleadoServiciosFragment extends Fragment {
         mToolbar = view.findViewById(R.id.toolbar3);
         mToolbar.setTitle(R.string.titulo_toolbar_servicios);
         mToolbar.setNavigationIcon(R.drawable.ic_arrow_back);
-        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //Mover a fragment empleados
-                new TareaVolverAEmpleados().execute();
-
-            }
-        });
         listViewServicios = view.findViewById(R.id.list_view_servicios);
         serviciosAdaptador = new ServiciosAdaptador(getActivity());
         Bundle bundle = getActivity().getIntent().getExtras();
@@ -119,6 +113,26 @@ public class EmpleadoServiciosFragment extends Fragment {
         SharedPreferences prefs = getActivity().getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE);
         token = prefs.getString("token","algo");
         tipo = prefs.getString("tipo","algo");
+        if (tipo.equals("CLIENTE")){
+            mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //Mover a fragment empleados
+                    new TareaVolverAEmpleados().execute();
+
+                }
+            });
+        }
+        else{
+            mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //Mover a Home
+                    new TareaVolverAHome().execute();
+
+                }
+            });
+        }
         if (tipo.equals("EMPLEADO"))
             new TareaCargarDatosServicios().execute();
         else
@@ -299,6 +313,15 @@ public class EmpleadoServiciosFragment extends Fragment {
             fragmentTransaction.replace(R.id.frame_contenedor,empleadosFragment);
             fragmentTransaction.addToBackStack(null);
             fragmentTransaction.commit();
+            return null;
+        }
+    }
+    public class TareaVolverAHome extends AsyncTask<Void,Void,Void>{
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            Intent intent = new Intent(getActivity(),HomeActivity.class);
+            startActivity(intent);
             return null;
         }
     }
