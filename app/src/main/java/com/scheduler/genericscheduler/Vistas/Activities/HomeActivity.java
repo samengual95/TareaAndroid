@@ -168,6 +168,7 @@ public class HomeActivity extends AppCompatActivity {
             Intent intent = new Intent(HomeActivity.this,PrincipalActivity.class);
             intent.putExtra("tokentipo",respuestaSesion);
             startActivity(intent);
+            overridePendingTransition(R.anim.left_in,R.anim.left_out);
             progressDialog.dismiss();
         }
     }
@@ -202,6 +203,7 @@ public class HomeActivity extends AppCompatActivity {
             editor.commit();
             Intent intent = new Intent(HomeActivity.this,PrincipalActivity.class);
             startActivity(intent);
+            overridePendingTransition(R.anim.left_in,R.anim.left_out);
             progressDialog.dismiss();
         }
     }
@@ -233,6 +235,7 @@ public class HomeActivity extends AppCompatActivity {
             super.onPostExecute(aVoid);
             Intent intent = new Intent(HomeActivity.this,LoginActivity.class);
             startActivity(intent);
+            overridePendingTransition(R.anim.left_in,R.anim.left_out);
             progressDialog.dismiss();
         }
     }

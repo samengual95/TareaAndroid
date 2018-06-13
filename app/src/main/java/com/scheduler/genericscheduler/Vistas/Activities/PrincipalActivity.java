@@ -70,6 +70,7 @@ public class PrincipalActivity extends AppCompatActivity {
             super.onPostExecute(aVoid);
             empleadosFragment = new EmpleadosFragment();
             FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            fragmentTransaction.setCustomAnimations(R.anim.enter,R.anim.exit,R.anim.pop_enter,R.anim.pop_exit);
             fragmentTransaction.replace(R.id.frame_contenedor,empleadosFragment);
             fragmentTransaction.addToBackStack(null);
             fragmentTransaction.commit();
@@ -102,6 +103,7 @@ public class PrincipalActivity extends AppCompatActivity {
             super.onPostExecute(aVoid);
              empleadoServiciosFragment= new EmpleadoServiciosFragment();
             FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            fragmentTransaction.setCustomAnimations(R.anim.enter,R.anim.exit,R.anim.pop_enter,R.anim.pop_exit);
             fragmentTransaction.replace(R.id.frame_contenedor,empleadoServiciosFragment);
             fragmentTransaction.addToBackStack(null);
             fragmentTransaction.commit();
@@ -134,6 +136,7 @@ public class PrincipalActivity extends AppCompatActivity {
             super.onPostExecute(aVoid);
             cancelarFragment= new CancelarFragment();
             FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            fragmentTransaction.setCustomAnimations(R.anim.enter,R.anim.exit,R.anim.pop_enter,R.anim.pop_exit);
             fragmentTransaction.replace(R.id.frame_contenedor,cancelarFragment);
             fragmentTransaction.addToBackStack(null);
             fragmentTransaction.commit();

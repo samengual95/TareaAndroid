@@ -333,6 +333,7 @@ public class CancelarFragment extends Fragment {
             super.onPostExecute(aVoid);
             Intent intent = new Intent(getActivity(),HomeActivity.class);
             startActivity(intent);
+            getActivity().overridePendingTransition(R.anim.left_in,R.anim.left_out);
             progressDialog.dismiss();
         }
     }
@@ -346,6 +347,7 @@ public class CancelarFragment extends Fragment {
             editor.apply();
             Intent intent = new Intent(getActivity(),HomeActivity.class);
             startActivity(intent);
+            getActivity().overridePendingTransition(R.anim.right_in,R.anim.right_out);
             return null;
         }
     }
