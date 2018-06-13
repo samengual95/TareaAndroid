@@ -63,6 +63,7 @@ public class EmpleadoHorariosFragment extends Fragment {
     private ListView listViewHorarios;
     private String fecha;
     private String fecha1;
+    private String fecha2;
     private String fechaReserva;
     private String s;
     private String s1;
@@ -171,11 +172,13 @@ public class EmpleadoHorariosFragment extends Fragment {
                         textoReserva.setText(dayOfMonth+"/"+(month+1)+"/"+year);
                         SimpleDateFormat parseador = new SimpleDateFormat("dd/MM/yyyy");
                         SimpleDateFormat formateador = new SimpleDateFormat("ddMMyyyy");
+                        SimpleDateFormat formateador2 = new SimpleDateFormat("dd/MM/yyyy");
                         fecha = textoReserva.getText().toString();
                         try {
                             Date d = parseador.parse(fecha);
                              fecha1 =  formateador.format(d);
-                            textoReserva.setText(fecha1);
+                             fecha2 = formateador2.format(d);
+                            textoReserva.setText(fecha2);
                         } catch (ParseException e) {
                             e.printStackTrace();
                         }
