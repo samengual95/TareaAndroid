@@ -214,6 +214,7 @@ public class EmpleadosFragment extends Fragment {
             super.onPostExecute(aVoid);
             empleadoServiciosFragment = new EmpleadoServiciosFragment();
             FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+            fragmentTransaction.setCustomAnimations(R.anim.enter,R.anim.exit,R.anim.pop_enter,R.anim.pop_exit);
             fragmentTransaction.replace(R.id.frame_contenedor,empleadoServiciosFragment);
             fragmentTransaction.addToBackStack(null);
             fragmentTransaction.commit();
@@ -236,6 +237,7 @@ public class EmpleadosFragment extends Fragment {
             super.onPostExecute(aVoid);
             Intent intent = new Intent(getActivity(),HomeActivity.class);
             startActivity(intent);
+            getActivity().overridePendingTransition(R.anim.right_in,R.anim.right_out);
         }
     }
 }

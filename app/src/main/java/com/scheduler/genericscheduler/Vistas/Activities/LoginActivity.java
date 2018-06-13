@@ -135,6 +135,7 @@ public class LoginActivity extends AppCompatActivity {
             Intent intent = new Intent(LoginActivity.this,HomeActivity.class);
             intent.putExtra("datos_usuario",tokenRequest);
             startActivity(intent);
+            overridePendingTransition(R.anim.left_in,R.anim.left_out);
             progressDialog.dismiss();
         }
     }

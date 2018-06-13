@@ -270,6 +270,7 @@ public class EmpleadoServiciosFragment extends Fragment {
             super.onPostExecute(aVoid);
             empleadoHorariosFragment = new EmpleadoHorariosFragment();
             FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+            fragmentTransaction.setCustomAnimations(R.anim.enter,R.anim.exit,R.anim.pop_enter,R.anim.pop_exit);
             fragmentTransaction.replace(R.id.frame_contenedor,empleadoHorariosFragment);
             fragmentTransaction.addToBackStack(null);
             fragmentTransaction.commit();
@@ -310,6 +311,7 @@ public class EmpleadoServiciosFragment extends Fragment {
         protected Void doInBackground(Void... voids) {
             empleadosFragment = new EmpleadosFragment();
             FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+            fragmentTransaction.setCustomAnimations(R.anim.enter,R.anim.exit,R.anim.pop_enter,R.anim.pop_exit);
             fragmentTransaction.replace(R.id.frame_contenedor,empleadosFragment);
             fragmentTransaction.addToBackStack(null);
             fragmentTransaction.commit();

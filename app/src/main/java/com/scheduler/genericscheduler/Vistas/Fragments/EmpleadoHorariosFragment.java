@@ -441,6 +441,7 @@ public class EmpleadoHorariosFragment extends Fragment {
             Intent intent = new Intent(getActivity(),HomeActivity.class);
             intent.putExtra("tokentipo",respuestaSesion);
             startActivity(intent);
+            getActivity().overridePendingTransition(R.anim.left_in,R.anim.left_out);
             progressDialog.dismiss();
         }
     }
@@ -450,6 +451,7 @@ public class EmpleadoHorariosFragment extends Fragment {
         protected Void doInBackground(Void... voids) {
             empleadoServiciosFragment = new EmpleadoServiciosFragment();
             FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+            fragmentTransaction.setCustomAnimations(R.anim.enter,R.anim.exit,R.anim.pop_enter,R.anim.pop_exit);
             fragmentTransaction.replace(R.id.frame_contenedor,empleadoServiciosFragment);
             fragmentTransaction.addToBackStack(null);
             fragmentTransaction.commit();
