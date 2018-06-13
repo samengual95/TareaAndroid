@@ -10,10 +10,12 @@ import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.facebook.AccessToken;
 import com.facebook.login.LoginManager;
@@ -33,7 +35,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class HomeActivity extends AppCompatActivity {
 
 
-    private Button boton,boton1,boton2;
+    private CardView reservar,reservas,cerrarSesion;
+    private TextView textoUsuario;
     private CircleImageView imageView;
     private Retrofit retrofit;
     private RespuestaSesion respuestaSesion;
@@ -46,7 +49,6 @@ public class HomeActivity extends AppCompatActivity {
 
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,8 +57,20 @@ public class HomeActivity extends AppCompatActivity {
             new TareaMoverseLogin().execute();
         }
         else{
-            Bundle bundle = getIntent().getExtras();
-            nuevo = (TokenRequest) bundle.getSerializable("datos_usuario");
+            SharedPreferences preferences = getSharedPreferences("Preferencias_usuario", Context.MODE_PRIVATE);
+            String mail = preferences.getString("mail","No hay dato");
+            String nombre = preferences.getString("nombre","No hay dato");
+            String ape = preferences.getString("apellido","No hay dato");
+            String token_fb = preferences.getString("token_fb","No hay dato");
+            String fb_id = preferences.getString("fb_id","No hay dato");
+            nuevo = new TokenRequest();
+            nuevo.setCorreo(mail);
+            nuevo.setNombre(nombre);
+            nuevo.setApellido(ape);
+            nuevo.setToken(token_fb);
+            nuevo.setFacebookid(fb_id);
+            /*Bundle bundle = getIntent().getExtras();
+            nuevo = (TokenRequest) bundle.getSerializable("datos_usuario");*/
             SharedPreferences prefs = getSharedPreferences("MisPreferencias",Context.MODE_PRIVATE);
             token = prefs.getString("token","not");
             if (token.equals("not")){
@@ -64,37 +78,40 @@ public class HomeActivity extends AppCompatActivity {
                 respuestaSesion = new RespuestaSesion();
             }
             setContentView(R.layout.activity_home);
-            boton1 = findViewById(R.id.button2);
-            boton1.setOnClickListener(new View.OnClickListener() {
+            imageView = findViewById(R.id.imagen_perfil_facebook);
+            Picasso.get()
+                    .load("https://graph.facebook.com/v2.2/" + fb_id + "/picture?height=120&type=normal")
+                    .resize(85,85)
+                    .into(imageView);
+            textoUsuario = findViewById(R.id.textView2);
+            textoUsuario.setText(nombre+" "+ape);
+            reservar = findViewById(R.id.cardViewReserva);
+            reservas = findViewById(R.id.cardViewCancelar);
+            cerrarSesion = findViewById(R.id.cardViewCerrarSesion);
+
+            reservar.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     new TareaMoversePrincipal().execute();
                 }
             });
-            boton = findViewById(R.id.button1);
-            boton.setOnClickListener(new View.OnClickListener() {
+
+            reservas.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    new TareaMoversePrincipalCancelar().execute();
+                }
+            });
+
+            cerrarSesion.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     cerrarSesion();
                     new TareaMoverseLogin().execute();
                 }
             });
-            boton2 = findViewById(R.id.button3);
-            boton2.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    new TareaMoversePrincipalCancelar().execute();
-                }
-            });
-            imageView = findViewById(R.id.imagen_perfil_facebook);
-            prefs = getSharedPreferences("MisPreferencias",Context.MODE_PRIVATE);
-            fbId = prefs.getString("fbid","algo");
-            Picasso.get()
-                    .load("https://graph.facebook.com/v2.2/" + fbId + "/picture?height=120&type=normal")
-                    .resize(85,85)
-                    .into(imageView);
+            }
         }
-    }
 
     public void mandarDatos(){
         retrofit = new Retrofit.Builder()
@@ -111,8 +128,8 @@ public class HomeActivity extends AppCompatActivity {
                     SharedPreferences.Editor editor = prefs.edit();
                     editor.putString("token", respuestaSesion.getToken());
                     editor.putString("tipo", respuestaSesion.getTipo());
-                    editor.commit();
-                    Log.e(TAG,"tipo : " + respuestaSesion.getTipo());
+                    editor.apply();
+                    Log.e(TAG,"tipo : " + respuestaSesion.getToken());
             }
 
             @Override
@@ -224,7 +241,7 @@ public class HomeActivity extends AppCompatActivity {
     public void cerrarSesion(){
         SharedPreferences prefs = getSharedPreferences("MisPreferencias",Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit().clear();
-        editor.commit();
+        editor.apply();
         LoginManager.getInstance().logOut();
     }
 }

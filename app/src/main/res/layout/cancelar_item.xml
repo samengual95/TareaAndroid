@@ -13,18 +13,8 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/textViewIdReserva"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:layout_marginTop="5dp"
-            android:textColor="@color/colorGristClaro"
-            android:text="Id Reserva"
-            android:layout_gravity="center_horizontal"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:id="@+id/textViewEntrada"
-            android:textSize="16sp"
+            android:textSize="20sp"
             android:textStyle="italic"
             android:textColor="@color/colorGristClaro"
             android:layout_marginTop="5dp"

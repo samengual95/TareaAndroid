@@ -67,16 +67,20 @@ public class LoginActivity extends AppCompatActivity {
                                     fbId = object.getString("id");
                                 }
                                 token = loginResult.getAccessToken().getToken();
+                                SharedPreferences preferences = getSharedPreferences("Preferencias_usuario", Context.MODE_PRIVATE);
+                                SharedPreferences.Editor editor = preferences.edit();
+                                editor.putString("mail",mail);
+                                editor.putString("token_fb",token);
+                                editor.putString("nombre",nombre);
+                                editor.putString("apellido",ape);
+                                editor.putString("fb_id",fbId);
+                                editor.apply();
                                 tokenRequest = new TokenRequest();
                                 tokenRequest.setToken(token);
                                 tokenRequest.setCorreo(mail);
                                 tokenRequest.setNombre(nombre);
                                 tokenRequest.setApellido(ape);
                                 tokenRequest.setFacebookid(fbId);
-                                SharedPreferences prefs = getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE);
-                                SharedPreferences.Editor editor = prefs.edit();
-                                editor.putString("fbid",fbId);
-                                editor.commit();
                                 Log.e(TAG,"token:" + tokenRequest.getToken());
                                 Log.e(TAG,"correo: " + tokenRequest.getCorreo());
                             }catch (JSONException e){

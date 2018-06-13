@@ -3,22 +3,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:theme="@style/AppTheme.NoActionBar"
     tools:context="com.scheduler.genericscheduler.Vistas.Fragments.EmpleadoHorariosFragment">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:orientation="horizontal">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-
-            <android.support.v7.widget.Toolbar
+    <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -26,49 +15,62 @@
                 android:minHeight="?attr/actionBarSize"
                 android:theme="?attr/actionBarTheme">
 
-                <Button
-                android:id="@+id/ButtonDia"
+    </android.support.v7.widget.Toolbar>
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/cardViewDia"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:layout_below="@+id/toolbar"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="39dp"
+        android:clickable="true"
+        android:focusable="true"
+        app:cardBackgroundColor="@color/colorPrimaryDark"
+        app:cardCornerRadius="15dp"
+        app:cardElevation="10dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignStart="@+id/cardViewReserva"
+            android:layout_below="@+id/textViewSeleccionDia">
+
+            <TextView
+                android:id="@+id/textViewSeleccionDia"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="100dp"
-                android:background="@color/colorLogout"
-                android:text="Dia" />
-                <Button
-                    android:id="@+id/ButtonOK"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:background="@color/colorLogout"
-                    android:text="ok" />
-                <TextView
-                    android:id="@+id/tvDia"
-                    android:text="dia"
-                    android:textColor="@color/colorLogout"
-                    android:textSize="30dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"/>
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:text="@string/texto_seleccionar_dia"
+                android:textColor="@color/colorBlanco"
+                android:textSize="18sp"
+                android:textStyle="italic" />
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
 
-            </android.support.v7.widget.Toolbar>
+    <ListView
+        android:id="@+id/list_view_horarios"
+        android:layout_width="300dp"
+        android:layout_height="330dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="15.0sp"
+        android:layout_marginBottom="14dp">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
+    </ListView>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical">
-
-                    <ListView
-                        android:id="@+id/list_view_horarios"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"></ListView>
-                </LinearLayout>
-            </LinearLayout>
-
-        </LinearLayout>
-    </LinearLayout>
+    <TextView
+        android:id="@+id/tvDia"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/cardViewDia"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:text=""
+        android:textColor="@color/colorGristClaro"
+        android:textSize="25sp"
+        android:textStyle="italic" />
 
 </RelativeLayout>

@@ -51,6 +51,7 @@ public class EmpleadoServiciosFragment extends Fragment {
     private String mParam2;
 
     private ProgressDialog progressDialog;
+    private EmpleadosFragment empleadosFragment;
     private ServiciosAdaptador serviciosAdaptador;
     private ListView listViewServicios;
     private EmpleadoHorariosFragment empleadoHorariosFragment;
@@ -59,6 +60,7 @@ public class EmpleadoServiciosFragment extends Fragment {
     private Retrofit retrofit;
     private String token;
     private String tipo;
+    private android.support.v7.widget.Toolbar mToolbar;
 
     private static final String TAG = "Probando";
 
@@ -99,6 +101,17 @@ public class EmpleadoServiciosFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_empleado_servicios, container, false);
+        mToolbar = view.findViewById(R.id.toolbar3);
+        mToolbar.setTitle(R.string.titulo_toolbar_servicios);
+        mToolbar.setNavigationIcon(R.drawable.ic_arrow_back);
+        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Mover a fragment empleados
+                new TareaVolverAEmpleados().execute();
+
+            }
+        });
         listViewServicios = view.findViewById(R.id.list_view_servicios);
         serviciosAdaptador = new ServiciosAdaptador(getActivity());
         Bundle bundle = getActivity().getIntent().getExtras();
@@ -275,6 +288,18 @@ public class EmpleadoServiciosFragment extends Fragment {
             super.onPostExecute(aVoid);
             listViewServicios.setAdapter(serviciosAdaptador);
             progressDialog.dismiss();
+        }
+    }
+    public class TareaVolverAEmpleados extends AsyncTask<Void,Void,Void>{
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            empleadosFragment = new EmpleadosFragment();
+            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.frame_contenedor,empleadosFragment);
+            fragmentTransaction.addToBackStack(null);
+            fragmentTransaction.commit();
+            return null;
         }
     }
 }

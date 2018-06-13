@@ -13,6 +13,8 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -61,9 +63,8 @@ public class EmpleadoHorariosFragment extends Fragment {
     private HorarioAdaptador horarioAdaptador;
     private Retrofit retrofit;
     private ListView listViewHorarios;
-    private String fecha;
+    private String fecha,fecha3;
     private String fecha1;
-    private String fecha2;
     private String fechaReserva;
     private String s;
     private String s1;
@@ -76,6 +77,9 @@ public class EmpleadoHorariosFragment extends Fragment {
     private String token;
     private String tipo;
     private DialogFragment ConfirmarReserva;
+    private android.support.v7.widget.Toolbar mToolbar;
+    EmpleadoServiciosFragment empleadoServiciosFragment;
+    CardView cardView;
 
     public EmpleadoHorariosFragment() {
         // Required empty public constructor
@@ -104,6 +108,51 @@ public class EmpleadoHorariosFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_empleado_horarios, container, false);
+        mToolbar = view.findViewById(R.id.toolbar);
+        mToolbar.setTitle(R.string.titulo_toolbar_horarios);
+        mToolbar.setNavigationIcon(R.drawable.ic_arrow_back);
+        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new TareaVolverAServicios().execute();
+            }
+        });
+        cardView = view.findViewById(R.id.cardViewDia);
+        cardView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final Calendar c = Calendar.getInstance();
+                dia = c.get(Calendar.DAY_OF_MONTH);
+                mes = c.get(Calendar.MONTH);
+                anio = c.get(Calendar.YEAR);
+
+                final DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                        textoReserva.setText(dayOfMonth+"/"+(month+1)+"/"+year);
+                        SimpleDateFormat parseador = new SimpleDateFormat("dd/MM/yyyy");
+                        SimpleDateFormat formateador = new SimpleDateFormat("ddMMyyyy");
+                        SimpleDateFormat formateador1 = new SimpleDateFormat("dd/MM/yyyy");
+                        fecha = textoReserva.getText().toString();
+                        try {
+                            Date d = parseador.parse(fecha);
+                            fecha1 =  formateador.format(d);
+                            fecha3 = formateador1.format(d);
+                            textoReserva.setText(fecha3);
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+                        s1 = fecha1.toString();
+                        horarioAdaptador = new HorarioAdaptador(getActivity());
+                        if (tipo.equals("CLIENTE"))
+                            new TareaCargarHorarios().execute();
+                        else
+                            new TareaCargarHorariosEmpleado().execute();
+                    }
+                },anio,mes,dia);
+                datePickerDialog.show();
+            }
+        });
         Bundle bundle = getActivity().getIntent().getExtras();
         SharedPreferences prefs = getActivity().getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE);
         token = prefs.getString("token","algo");
@@ -111,8 +160,6 @@ public class EmpleadoHorariosFragment extends Fragment {
         empleado = (Empleado) getActivity().getIntent().getExtras().getSerializable("empleado_seleccionado");
         servicio = (Servicio) getActivity().getIntent().getExtras().getSerializable("servicio_seleccionado");
         textoReserva=view.findViewById(R.id.tvDia);
-        botonReserva = view.findViewById(R.id.ButtonDia);
-        botonOK = view.findViewById(R.id.ButtonOK);
         listViewHorarios = view.findViewById(R.id.list_view_horarios);
         listViewHorarios.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -155,47 +202,6 @@ public class EmpleadoHorariosFragment extends Fragment {
                     dialogo1.show();
 
                 }
-            }
-        });
-
-
-        botonReserva.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                final Calendar c = Calendar.getInstance();
-                dia = c.get(Calendar.DAY_OF_MONTH);
-                mes = c.get(Calendar.MONTH);
-                anio = c.get(Calendar.YEAR);
-
-                final DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                        textoReserva.setText(dayOfMonth+"/"+(month+1)+"/"+year);
-                        SimpleDateFormat parseador = new SimpleDateFormat("dd/MM/yyyy");
-                        SimpleDateFormat formateador = new SimpleDateFormat("ddMMyyyy");
-                        SimpleDateFormat formateador2 = new SimpleDateFormat("dd/MM/yyyy");
-                        fecha = textoReserva.getText().toString();
-                        try {
-                            Date d = parseador.parse(fecha);
-                             fecha1 =  formateador.format(d);
-                             fecha2 = formateador2.format(d);
-                            textoReserva.setText(fecha2);
-                        } catch (ParseException e) {
-                            e.printStackTrace();
-                        }
-                        s1 = fecha1.toString();
-                    }
-                },anio,mes,dia);
-                datePickerDialog.show();
-            }
-        });
-        botonOK.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                horarioAdaptador = new HorarioAdaptador(getActivity());
-                if (tipo.equals("CLIENTE"))
-                    new TareaCargarHorarios().execute();
-                else
-                    new TareaCargarHorariosEmpleado().execute();
             }
         });
         return view;
@@ -433,6 +439,18 @@ public class EmpleadoHorariosFragment extends Fragment {
             intent.putExtra("tokentipo",respuestaSesion);
             startActivity(intent);
             progressDialog.dismiss();
+        }
+    }
+    public class TareaVolverAServicios extends AsyncTask<Void,Void,Void>{
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            empleadoServiciosFragment = new EmpleadoServiciosFragment();
+            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.frame_contenedor,empleadoServiciosFragment);
+            fragmentTransaction.addToBackStack(null);
+            fragmentTransaction.commit();
+            return null;
         }
     }
 }

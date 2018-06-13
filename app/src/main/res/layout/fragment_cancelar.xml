@@ -6,10 +6,25 @@
     android:theme="@style/AppTheme.NoActionBar"
     android:orientation="horizontal">
 
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme" />
+
     <ListView
         android:id="@+id/list_view_cancelar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/toolbar4"
+        android:layout_marginTop="19dp"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="15.0sp">
+
+
     </ListView>
 
 </RelativeLayout>
