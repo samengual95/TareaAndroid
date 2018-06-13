@@ -41,9 +41,7 @@ public class ServiciosAdaptador extends BaseAdapter{
         Servicio servicio = (Servicio) getItem(position);
         convertView = LayoutInflater.from(context).inflate(R.layout.servicio_item,null);
         TextView text1 = convertView.findViewById(R.id.textView11);
-        TextView text2 = convertView.findViewById(R.id.textView12);
         text1.setText(servicio.getNombre());
-        text2.setText("Duracion: " + servicio.getDuracionEnMinutos() + " minutos.");
         return convertView;
     }
 

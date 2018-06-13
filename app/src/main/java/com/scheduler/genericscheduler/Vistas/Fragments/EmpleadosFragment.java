@@ -2,6 +2,7 @@ package com.scheduler.genericscheduler.Vistas.Fragments;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -14,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toolbar;
 
 import com.scheduler.genericscheduler.Controladores.EmpleadoAdaptador;
 import com.scheduler.genericscheduler.Controladores.InterfaceServicios;
@@ -21,6 +23,9 @@ import com.scheduler.genericscheduler.Modelos.Empleado;
 import com.scheduler.genericscheduler.Modelos.EmpleadoRespuesta;
 import com.scheduler.genericscheduler.Modelos.RespuestaSesion;
 import com.scheduler.genericscheduler.R;
+import com.scheduler.genericscheduler.Vistas.Activities.HomeActivity;
+import com.scheduler.genericscheduler.Vistas.Activities.PantallaCargaActivity;
+import com.scheduler.genericscheduler.Vistas.Activities.PrincipalActivity;
 
 import java.util.ArrayList;
 
@@ -49,6 +54,7 @@ public class EmpleadosFragment extends Fragment {
     private RespuestaSesion respuestaSesion;
     private String token;
     private String tipo;
+    private android.support.v7.widget.Toolbar mToolbar;
 
     private OnFragmentInteractionListener mListener;
 
@@ -87,10 +93,20 @@ public class EmpleadosFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_empleados, container, false);
+        mToolbar =  view.findViewById(R.id.toolbar2);
+        mToolbar.setTitle(R.string.titulo_toolbar_empleados);
+        mToolbar.setNavigationIcon(R.drawable.ic_arrow_back);
+        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new TareaMoverseHome().execute();
+            }
+        });
         listViewEmpleado = view.findViewById(R.id.list_view_empleado);
         empleadoAdaptador = new EmpleadoAdaptador(getActivity());
         SharedPreferences prefs = getActivity().getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE);
         token = prefs.getString("token","algo");
+        Log.e(TAG,"token:" + token);
         new TareaCargarDatosEmpleados().execute();
         listViewEmpleado.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -112,10 +128,6 @@ public class EmpleadosFragment extends Fragment {
             public void onResponse(Call<ArrayList<Empleado>> call, Response<ArrayList<Empleado>> response) {
                 ArrayList<Empleado> resp = response.body();
                 empleadoAdaptador.AdicionarListaEmpleados(resp);
-                for (int i = 0 ; i < resp.size();i++){
-                    Empleado e = resp.get(i);
-                    Log.e(TAG,"Nombre:" + e.getNombre());
-                }
             }
 
             @Override
@@ -208,5 +220,22 @@ public class EmpleadosFragment extends Fragment {
             progressDialog.dismiss();
         }
     }
+    public class TareaMoverseHome extends AsyncTask<Void,Void,Void>{
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
 
+        @Override
+        protected Void doInBackground(Void... voids) {
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            Intent intent = new Intent(getActivity(),HomeActivity.class);
+            startActivity(intent);
+        }
+    }
 }

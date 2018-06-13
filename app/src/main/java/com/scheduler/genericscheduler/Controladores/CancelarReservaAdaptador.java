@@ -46,15 +46,13 @@ public class CancelarReservaAdaptador extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         Reserva reserva = (Reserva) getItem(position);
         convertView = LayoutInflater.from(context).inflate(R.layout.cancelar_item,null);
-        TextView tvIdReserva = convertView.findViewById(R.id.textViewIdReserva);
         TextView tvEntrada = convertView.findViewById(R.id.textViewEntrada);
-        tvIdReserva.setText(reserva.getId());
         String entrada = reserva.getEntrada();
         SimpleDateFormat parseador = new SimpleDateFormat("ddMMyyyyHHmmss");
         SimpleDateFormat formateador = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
         try {
             Date date = parseador.parse(entrada);
-            s = formateador.format(date);
+            s = "Fecha y hora: "  + formateador.format(date);
         } catch (ParseException e) {
             e.printStackTrace();
         }

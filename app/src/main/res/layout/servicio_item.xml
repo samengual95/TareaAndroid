@@ -22,17 +22,6 @@
             android:textSize="20sp"
             android:layout_gravity="center_horizontal"
             android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/textView12"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:text="Duracion"
-            android:textColor="@color/colorGristClaro"
-            android:textSize="16sp"
-            android:layout_gravity="center_horizontal"
-            android:textStyle="bold" />
     </LinearLayout>
 
 </LinearLayout>

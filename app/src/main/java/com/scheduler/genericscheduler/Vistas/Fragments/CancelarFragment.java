@@ -54,6 +54,7 @@ public class CancelarFragment extends Fragment {
     private Reserva reserva;
     private String token;
     private String tipo;
+    private android.support.v7.widget.Toolbar mToolbar;
 
     private OnFragmentInteractionListener mListener;
 
@@ -83,6 +84,16 @@ public class CancelarFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_cancelar, container, false);
+        mToolbar = view.findViewById(R.id.toolbar4);
+        mToolbar.setTitle(R.string.titulo_toolbar_cancelar);
+        mToolbar.setSubtitle(R.string.subtitulo_toolbar_cancelar);
+        mToolbar.setNavigationIcon(R.drawable.ic_arrow_back);
+        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new TareaMoverseHome().execute();
+            }
+        });
         list_view_cancelar = view.findViewById(R.id.list_view_cancelar);
         cancelarReservaAdaptador = new CancelarReservaAdaptador(getActivity());
         SharedPreferences prefs = getActivity().getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE);
@@ -323,6 +334,19 @@ public class CancelarFragment extends Fragment {
             Intent intent = new Intent(getActivity(),HomeActivity.class);
             startActivity(intent);
             progressDialog.dismiss();
+        }
+    }
+    public class TareaMoverseHome extends AsyncTask<Void,Void,Void>{
+        @Override
+        protected Void doInBackground(Void... voids) {
+            cancelar = false;
+            SharedPreferences preferences = getActivity().getSharedPreferences("MisPreferencias",Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putBoolean("cancelar",cancelar);
+            editor.apply();
+            Intent intent = new Intent(getActivity(),HomeActivity.class);
+            startActivity(intent);
+            return null;
         }
     }
 

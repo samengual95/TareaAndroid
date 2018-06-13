@@ -11,6 +11,12 @@
     <string name="texto_reservar">RESERVAR</string>
     <string name="texto_mis_reservas">MIS RESERVAS</string>
     <string name="texto_cerrar_sesion">CERRAR SESION</string>
+    <string name="texto_seleccionar_dia">SELECCIONAR FECHA</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="datos_usuario">datos_usuario</string>
+    <string name="titulo_toolbar_empleados">Seleccionar empleado</string>
+    <string name="titulo_toolbar_servicios">Seleccionar servicio</string>
+    <string name="titulo_toolbar_horarios">Seleccionar dia y horario</string>
+    <string name="titulo_toolbar_cancelar">Mis Reservas</string>
+    <string name="subtitulo_toolbar_cancelar">Seleccione la reserva para cancelar</string>
 </resources>
